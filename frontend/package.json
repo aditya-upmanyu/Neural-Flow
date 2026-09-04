@@ -1,0 +1,79 @@
+{
+  "name": "neuralflow-v5-frontend",
+  "version": "5.0.0",
+  "description": "AI-Powered Autonomous Infrastructure Resilience - React Frontend with 3D Visualization",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
+  },
+  "keywords": [
+    "react",
+    "threejs",
+    "3d-visualization",
+    "network-monitoring",
+    "cybersecurity",
+    "real-time-dashboard",
+    "tailwindcss",
+    "vite"
+  ],
+  "author": {
+    "name": "Aditya Upmanyu",
+    "url": "https://github.com/aditya-upmanyu"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aditya-upmanyu/neuralflow-v5.git",
+    "directory": "frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/aditya-upmanyu/neuralflow-v5/issues"
+  },
+  "homepage": "https://github.com/aditya-upmanyu/neuralflow-v5#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.88.13",
+    "@react-three/fiber": "^8.15.11",
+    "@react-three/postprocessing": "^2.15.11",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.16.5",
+    "gsap": "^3.12.3",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.292.0",
+    "postprocessing": "^6.39.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^2.8.0",
+    "three": "^0.168.0",
+    "zustand": "^4.4.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
+    "@babel/preset-react": "^8.0.1",
+    "@jest/globals": "^30.5.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "babel-jest": "^30.5.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^30.5.1",
+    "jest-environment-jsdom": "^30.5.1",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^5.0.0"
+  }
+}

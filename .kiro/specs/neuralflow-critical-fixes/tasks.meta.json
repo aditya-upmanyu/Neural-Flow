@@ -1,0 +1,265 @@
+{
+  "pbtResults": {
+    "5. Write bug condition exploration test for validation bypass": {
+      "status": "passed",
+      "failingExample": "Counterexamples found confirming validation bugs:\n1. POST /api/mode with mode='INVALID' returns 200 (accepts invalid value) instead of 400 validation error\n2. POST /api/mode with mode=null returns 200 (accepts null) instead of 400 validation error  \n3. POST /api/mode with missing mode returns 200 instead of 400 validation error\n4. POST /api/attack with nodeId=null returns 404 instead of 400 validation error (may cause crashes)\n5. POST /api/attack with missing nodeId returns 404 instead of 400 validation error\n6. POST /api/attack with nodeId=-1 returns 404 instead of 400 validation error\n7. POST /api/attack with missing attackType returns 404 instead of 400 validation error\n8. POST /api/attack with invalid attackType='InvalidAttackType' returns 404 instead of 400\n9. POST /api/attack with intensity=99999 (out of valid range) returns 404 instead of 400\n10. POST /api/attack with intensity=-50 (negative) returns 404 instead of 400\n\nThe /api/attack endpoint appears to return 404 (endpoint not found), suggesting the route might be different than expected or requires different path handling. The /api/mode endpoint accepts all invalid inputs without any validation.",
+      "lastRunTimestamp": 1788503620727
+    },
+    "2. Write bug condition exploration test for LoadGenerator leak": {
+      "status": "unexpected_pass",
+      "failingExample": "Test passed unexpectedly. The test verified that:\n- All 10 cycles properly cleared intervalId (expected 0 leaks, found 0)\n- CPU usage remained stable with only 7.7% relative increase (well below 50% threshold)\n- isActive flag was properly set to false after each stop()\n\nCurrent code analysis shows LoadGenerator.stop() at line 408-409 already implements proper cleanup:\n```\nif (this.intervalId) { clearInterval(this.intervalId); this.intervalId = null; }\n```\n\nThis indicates either:\n1. The root cause hypothesis was incorrect\n2. The fix was already partially implemented\n3. The bug manifests under different conditions not tested here",
+      "lastRunTimestamp": 1788505390477
+    },
+    "3. Write bug condition exploration test for WebSocket cleanup": {
+      "status": "passed",
+      "failingExample": "Test successfully FAILED on unfixed code, proving the bug exists:\n\n**Counterexample Found:**\n- After 50 mount/unmount cycles: 201 pending reconnection timeouts remain active (Expected: 0)\n- WebSocket connections are closing, but reconnection timeouts continue scheduling\n- This proves Bug 1.5: \"WHEN a React component using useWebSocket unmounts THEN reconnection timeouts continue firing causing unnecessary network activity\"\n\n**Bug Confirmed:**\nThe test demonstrates that the `disconnect()` function in useWebSocket.js does not properly clear reconnection timeouts before the component unmounts, causing timeouts to accumulate and continue attempting reconnection even after the component is destroyed.\n\n**Test Output:**\n```\n✓ Completed 50/50 cycles\nPending timeouts: 201 timeouts\n\nExpected: 0 pending reconnection timeouts\nActual: 201 timeouts\n```\n\nThis exploration test correctly FAILS on unfixed code, validating the bug hypothesis. When the fix is implemented in Phase 3, this same test will pass, confirming the expected behavior is satisfied.",
+      "lastRunTimestamp": 1788505938869
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test for interval cleanup": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502819313
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502841943
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505974318
+      }
+    ],
+    "2. Write bug condition exploration test for LoadGenerator leak": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502819490
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502843216
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505974810
+      }
+    ],
+    "3. Write bug condition exploration test for WebSocket cleanup": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502819674
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502843594
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505975714
+      }
+    ],
+    "4. Write bug condition exploration test for fetch timeout": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502819829
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502844731
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505976285
+      }
+    ],
+    "5. Write bug condition exploration test for validation bypass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502819975
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502845059
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505977345
+      }
+    ],
+    "6. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502820149
+      },
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788505986105
+      }
+    ],
+    "7.1 Implement interval reference storage and cleanup in gracefulShutdown": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502820376
+      }
+    ],
+    "7.2 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502820647
+      }
+    ],
+    "7.3 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502820911
+      }
+    ],
+    "8.1 Implement strengthened LoadGenerator.stop() method": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502821145
+      }
+    ],
+    "8.2 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502821382
+      }
+    ],
+    "8.3 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502821621
+      }
+    ],
+    "9.1 Implement enhanced WebSocket cleanup in useWebSocket hook": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502821922
+      }
+    ],
+    "9.2 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502822252
+      }
+    ],
+    "9.3 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502822487
+      }
+    ],
+    "10.1 Implement fetchWithTimeout utility": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502822686
+      }
+    ],
+    "10.2 Replace all fetch calls in frontend with fetchWithTimeout": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502822861
+      }
+    ],
+    "10.3 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502823131
+      }
+    ],
+    "10.4 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502823348
+      }
+    ],
+    "11.1 Create input validation middleware": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502823549
+      }
+    ],
+    "11.2 Apply validation middleware to API endpoints": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502823762
+      }
+    ],
+    "11.3 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502823971
+      }
+    ],
+    "11.4 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502824168
+      }
+    ],
+    "12.1 Replace non-critical console.log with logger utility": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502824486
+      }
+    ],
+    "12.2 Verify critical logs still appear in console": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502824667
+      }
+    ],
+    "12.3 Verify preservation tests still pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502824821
+      }
+    ],
+    "13. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "77d56322-9835-43c2-ad1d-f220b7f9b94a",
+        "chatSessionId": "sess_6bbb7818-426e-4f3a-90ee-8f864b64c4ce",
+        "timestamp": 1788502824992
+      }
+    ]
+  }
+}

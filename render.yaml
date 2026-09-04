@@ -1,0 +1,32 @@
+# Render Blueprint Specification for NeuralFlow V5
+# Deploy directly with Render Blueprint: https://render.com/docs/blueprint-spec
+
+services:
+  # Unified Web Service (Backend + Static Frontend SPA + WebSocket)
+  - type: web
+    name: neuralflow-v5
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm run render-build
+    startCommand: npm run render-start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 18.18.0
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGINS
+        value: https://neuralflow-v5.onrender.com
+      - key: ENABLE_AI_AUTONOMY
+        value: "true"
+      - key: ENABLE_DECISION_RECEIPTS
+        value: "true"
+      # Razorpay test keys (configure in Render dashboard for security)
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false

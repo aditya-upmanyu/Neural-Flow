@@ -1,0 +1,54 @@
+{
+  "name": "neuralflow-v5-backend",
+  "version": "5.0.0",
+  "description": "AI-Powered Autonomous Infrastructure Resilience - Backend with NFV5 Control Plane",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node src/tests/systemTest.js",
+    "test:attacks": "node src/scripts/testAttacks.js",
+    "benchmark": "node src/scripts/runBenchmark.js",
+    "demo": "node src/scripts/demoMode.js"
+  },
+  "keywords": [
+    "network-defense",
+    "ai",
+    "machine-learning",
+    "cybersecurity",
+    "network-monitoring",
+    "real-time",
+    "websocket",
+    "node.js",
+    "razorpay-buildathon"
+  ],
+  "author": {
+    "name": "Aditya Upmanyu",
+    "url": "https://github.com/aditya-upmanyu"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aditya-upmanyu/neuralflow-v5.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aditya-upmanyu/neuralflow-v5/issues"
+  },
+  "homepage": "https://github.com/aditya-upmanyu/neuralflow-v5#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "brain.js": "^2.0.0-beta.23",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0",
+    "ws": "^8.14.2",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,128 @@
+# ===== SENSITIVE FILES (NEVER COMMIT) =====
+.env
+.env.local
+.env.*.local
+.env*.production.local
+*.pem
+*.key
+*.cert
+config/secrets.json
+
+# ===== NODE MODULES =====
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# ===== BUILD ARTIFACTS =====
+frontend/dist/
+frontend/build/
+backend/dist/
+backend/build/
+dist-ssr/
+*.tsbuildinfo
+
+# ===== LOGS =====
+logs/
+*.log
+backend/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ===== RUNTIME FILES =====
+*.pid
+*.pid.lock
+backend.pid
+frontend.pid
+backend.log
+frontend.log
+
+# ===== OS FILES =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===== EDITOR FILES =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# ===== CACHE =====
+.cache/
+.eslintcache
+.next/
+.turbo/
+
+# ===== DATABASE =====
+*.db
+*.sqlite
+*.sqlite3
+data/
+mongodb/
+.mongo/
+.mongo-data/
+
+# ===== TESTING =====
+coverage/
+.nyc_output/
+
+# ===== TEMPORARY / SCRATCH FILES =====
+temp/
+tmp/
+.tmp/
+*.tmp
+*.bak
+*.orig
+*.scratch
+
+# ===== JUNK / LOCAL-ONLY FILES =====
+# Stray Python ARP project accidentally placed inside frontend/src/utils
+"frontend/src/utils/updated arp/"
+frontend/src/utils/updated*/
+
+
+# BharatBazaar demo app - Required for External mode local demo, excluded from GitHub
+# (Judges see warning banner on Render: "External mode requires local instance")
+BharatBazaar 2/
+
+# Static mockup / prototype files not part of the project
+fsd/
+Untitled-2.html
+BHARATBAZAAR_INTEGRATION_SNIPPET.html
+
+# PowerPoint presentation (binary, not source code)
+*.pptx
+
+# Windows batch helper scripts (local use only)
+commit-to-github.bat
+START_PROJECT.bat
+
+# Leftover markdown scratchpads
+FINAL_MANUAL_CHECKS.md
+GITHUB_READY.md
+SUBMISSION_READY.md
+context_nfv3.md
+nfv3_enhancements.md
+
+# Garbled/temp filenames
+"ΓΣà_PROJECT_COMPLETE.txt"
+
+# ===== PACKAGE LOCK BACKUPS =====
+package-lock.json.backup
+yarn.lock.backup
+
+# Mac OS metadata
+__MACOSX
+.DS_Store
+.AppleDouble
+.LSOverride
