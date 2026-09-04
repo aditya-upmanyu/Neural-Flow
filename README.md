@@ -255,7 +255,7 @@ Test Results: 7 passed, 0 failed
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Maintainer
 
 **Aditya Upmanyu**  
 - GitHub: [@aditya-upmanyu](https://github.com/aditya-upmanyu)  
