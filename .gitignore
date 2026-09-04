@@ -126,3 +126,7 @@ __MACOSX
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Editor & AI tool metadata
+.kiro/
+final_touch_neuralflow
