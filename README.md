@@ -258,7 +258,6 @@ Test Results: 7 passed, 0 failed
 ## 👨‍💻 Author
 
 **Aditya Upmanyu**  
-- Email: [aditya.upmanyu_cs24@gla.ac.in](mailto:aditya.upmanyu_cs24@gla.ac.in)  
 - GitHub: [@aditya-upmanyu](https://github.com/aditya-upmanyu)  
 - Project Repository: [https://github.com/aditya-upmanyu/Neural_Flow](https://github.com/aditya-upmanyu/Neural_Flow)
 
