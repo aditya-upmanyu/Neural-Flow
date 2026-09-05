@@ -1059,8 +1059,8 @@ See:
 
 * 📊 [NeuralFlow](./NeuralFlow)
 * 🛒 [BharatBazaar](./BharatBazaar)
-* 🐛 [Report Issues](https://github.com/aditya-upmanyu/Neural_Flow/issues)
-* 💬 [GitHub Discussions](https://github.com/aditya-upmanyu/Neural_Flow/discussions)
+* 🐛 [Report Issues](https://github.com/aditya-upmanyu/Neural-Flow/issues)
+* 💬 [GitHub Discussions](https://github.com/aditya-upmanyu/Neural-Flow/discussions)
 
 ---
 
