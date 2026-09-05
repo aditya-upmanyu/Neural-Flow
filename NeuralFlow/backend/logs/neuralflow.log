@@ -17,3 +17,5 @@
 [2026-09-05T15:16:07.992Z] ℹ️  INFO  [DIAG AI] executeAIReroute CALLED: fromNode=1 (BB-NODE-1), lastRerouteTime=0, elapsed=1788621367992ms, cooldown=15000ms, loadGeneratorActive=true
 [2026-09-05T15:16:07.996Z] ℹ️  INFO  [DIAG AI] Candidates evaluated: count=2, list=[2:BB-NODE-2(health=100), 3:BB-NODE-3(health=100)]
 [2026-09-05T15:16:08.013Z] ℹ️  INFO  [DIAG AI] Traffic weights shifted. Before: [{"nodeId":1,"traffic":60},{"nodeId":2,"traffic":25},{"nodeId":3,"traffic":15}] | After: [{"nodeId":1,"traffic":20},{"nodeId":2,"traffic":25},{"nodeId":3,"traffic":55}]
+[2026-09-05T15:26:58.711Z] ⚠️  WARN  Stale PID 25424 in backend.pid (process is dead) — removing.
+[2026-09-05T15:26:58.731Z] ℹ️  INFO  NeuralFlow single-instance lock acquired (PID 14408) → C:\Users\adity\OneDrive\Desktop\NFV5\NeuralFlow\backend.pid
