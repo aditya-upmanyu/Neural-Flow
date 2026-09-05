@@ -1,0 +1,270 @@
+[
+  {
+    "id": "INC-255278",
+    "incidentId": "INC-255278",
+    "decisionId": "DEC-1788621374053",
+    "createdAt": "2026-09-05T15:16:14.053Z",
+    "scenario": "UNKNOWN",
+    "environment": "EXTERNAL",
+    "goal": "IMMEDIATE_FAILOVER",
+    "action": "REROUTE_TRAFFIC",
+    "targetNodeId": {
+      "id": 3,
+      "name": "BB-NODE-3"
+    },
+    "sourceNodeId": {
+      "id": 1,
+      "name": "BB-NODE-1"
+    },
+    "risk": 75,
+    "riskScore": 75,
+    "confidence": 0.9849357008934021,
+    "mlClassification": "ANOMALY_CONFIRMED",
+    "evidenceStrength": {
+      "strength": "WEAK",
+      "score": 45,
+      "signals": [
+        "LOW_HEALTH"
+      ],
+      "description": "1 signal(s) detected with weak evidence"
+    },
+    "abstention": {
+      "abstain": true,
+      "reason": "Risk score undefined below threshold 60",
+      "recommendation": "HUMAN_REVIEW"
+    },
+    "evidence": {
+      "capturedAt": "2026-09-05T15:16:06.955Z",
+      "nodeId": 1,
+      "nodeName": "BB-NODE-1",
+      "latency": 179,
+      "requestsPerSecond": 45,
+      "errorRate": 0.9,
+      "cpu": 1,
+      "memory": 30,
+      "queueSize": 0,
+      "health": 67,
+      "status": "WARNING",
+      "riskScore": 0,
+      "confidence": 0.9849153161048889,
+      "classification": "DETECTED",
+      "featureContributions": {},
+      "latencyTrend": null,
+      "predictedBreach": null
+    },
+    "featureAttribution": {},
+    "safetyGate": {
+      "outcome": "ALLOW_AUTONOMOUS_ACTION",
+      "checks": [
+        {
+          "name": "AI_CONFIDENCE",
+          "passed": true,
+          "reason": "Confidence 98.5% ≥ threshold 80%"
+        },
+        {
+          "name": "SOURCE_DEGRADED",
+          "passed": true,
+          "reason": "Source node is in degraded/attacked state"
+        },
+        {
+          "name": "TARGET_HEALTHY",
+          "passed": true,
+          "reason": "Target health 100/100 — OK"
+        },
+        {
+          "name": "TARGET_CAPACITY",
+          "passed": true,
+          "reason": "Target CPU 1.0% — capacity available"
+        },
+        {
+          "name": "FRESH_TELEMETRY",
+          "passed": true,
+          "reason": "Telemetry age: 1ms — fresh"
+        },
+        {
+          "name": "COOLDOWN_CLEAR",
+          "passed": true,
+          "reason": "Cooldown clear (1788621368007ms since last reroute)"
+        },
+        {
+          "name": "FALLBACK_EXISTS",
+          "passed": true,
+          "reason": "1 additional healthy node(s) available as fallback"
+        },
+        {
+          "name": "TARGET_NOT_OVERLOADED",
+          "passed": true,
+          "reason": "Target not overloaded"
+        }
+      ],
+      "blockedReason": null,
+      "timestamp": 1788621368007,
+      "policy": {
+        "minAutonomousConfidence": 0.8,
+        "maxTargetCpu": 80,
+        "minTargetHealth": 65,
+        "maxTelemetryAgeMs": 5000,
+        "cooldownMs": 15000,
+        "minHealthyAlternatives": 1
+      }
+    },
+    "policy": {},
+    "verification": {
+      "result": "VERIFIED_SUCCESS",
+      "checks": [
+        {
+          "name": "LATENCY_RECOVERED",
+          "passed": true,
+          "pre": 272,
+          "post": 5,
+          "unit": "ms"
+        },
+        {
+          "name": "ERROR_RATE_STABLE",
+          "passed": true,
+          "pre": 1.4,
+          "post": 0,
+          "unit": "%"
+        },
+        {
+          "name": "TARGET_STILL_HEALTHY",
+          "passed": true,
+          "value": 100,
+          "unit": "/100"
+        }
+      ],
+      "polls": [
+        {
+          "iteration": 1,
+          "timestamp": 1788621370018,
+          "metrics": {
+            "latency": 5,
+            "cpu": 1,
+            "memory": 30,
+            "errorRate": 0,
+            "requestsPerSecond": 37.6,
+            "health": 100,
+            "status": "HEALTHY",
+            "traffic": 55
+          }
+        },
+        {
+          "iteration": 2,
+          "timestamp": 1788621372020,
+          "metrics": {
+            "latency": 5,
+            "cpu": 1,
+            "memory": 30,
+            "errorRate": 0,
+            "requestsPerSecond": 37.6,
+            "health": 100,
+            "status": "HEALTHY",
+            "traffic": 55
+          }
+        },
+        {
+          "iteration": 3,
+          "timestamp": 1788621374022,
+          "metrics": {
+            "latency": 5,
+            "cpu": 1,
+            "memory": 30,
+            "errorRate": 0,
+            "requestsPerSecond": 37.6,
+            "health": 100,
+            "status": "HEALTHY",
+            "traffic": 55
+          }
+        }
+      ],
+      "preRerouteSnapshot": {
+        "latency": 272,
+        "errorRate": 1.4,
+        "health": 45,
+        "timestamp": 1788621368016
+      },
+      "postRerouteAvg": {
+        "latency": 5,
+        "errorRate": 0,
+        "health": 100
+      },
+      "latencyDelta": 267,
+      "errorRateDelta": 1.4,
+      "timestamp": 1788621374022
+    },
+    "beforeMetrics": {
+      "latency": 179,
+      "errorRate": 0.9,
+      "health": 67,
+      "cpu": 1,
+      "timestamp": "2026-09-05T15:16:06.955Z"
+    },
+    "afterMetrics": {
+      "latency": 5,
+      "errorRate": 0,
+      "health": 100,
+      "cpu": 0,
+      "timestamp": "2026-09-05T15:16:14.024Z"
+    },
+    "improvement": {
+      "latency": {
+        "before": 179,
+        "after": 5,
+        "delta": 174,
+        "improvement": "97.2%",
+        "status": "IMPROVED"
+      },
+      "errorRate": {
+        "before": 0.9,
+        "after": 0,
+        "delta": 0.9,
+        "improvement": "100.0%",
+        "status": "IMPROVED"
+      },
+      "health": {
+        "before": 67,
+        "after": 100,
+        "delta": 33,
+        "status": "IMPROVED"
+      },
+      "summary": "Latency improved by 97.2%, Error rate reduced by 100.0%"
+    },
+    "counterfactual": {
+      "disclaimer": "ESTIMATED - Based on industry averages and incident telemetry",
+      "methodology": {
+        "manualInterventionTime": "480.0s (industry avg: 5-10 min)",
+        "avgRequestRate": "50 RPS",
+        "avgTransactionValue": "₹500",
+        "conversionRate": "8%"
+      },
+      "withoutNeuralFlow": {
+        "projectedDowntime": "480.0s",
+        "projectedFailedRequests": 24000,
+        "estimatedRevenueLoss": "₹9,60,000",
+        "scenario": "Manual intervention required"
+      },
+      "withNeuralFlow": {
+        "actualRecoveryTime": "0.28s",
+        "actualFailedRequests": 1,
+        "actualRevenueLoss": "₹40",
+        "scenario": "Autonomous recovery"
+      },
+      "impact": {
+        "timesSaved": "1714.3x",
+        "requestsSaved": 23999,
+        "estimatedRevenueProtected": "₹9,59,960",
+        "percentageReduced": "100.0%"
+      },
+      "summary": "Autonomous recovery 1714x faster than manual intervention, protecting an estimated ₹9,59,960 in revenue"
+    },
+    "verificationOutcome": "VERIFIED_SUCCESS",
+    "result": "VERIFIED_SUCCESS",
+    "durationMs": 280,
+    "recoveryTimeMs": 280,
+    "detectionTimeMs": 1788621366955,
+    "mitigationTimeMs": 1061,
+    "adaptations": [],
+    "replayEvents": [],
+    "operatorFeedback": null
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "bharatbazaar-frontend",
+  "private": true,
+  "description": "Static HTML/CSS/JS frontend — served by the backend, not a separate dev server.",
+  "scripts": {
+    "dev": "node -e \"console.log('\\nFrontend is NOT a separate app.\\nIt is served by the backend at http://localhost:5001\\n\\nFrom project root run:\\n  cd ..\\n  npm run dev\\n\\nThen open:\\n  http://localhost:5001/index.html\\n')\"",
+    "start": "npm run dev"
+  }
+}

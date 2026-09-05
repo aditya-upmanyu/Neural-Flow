@@ -1,0 +1,665 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — BharatBazaar</title>
+    <link rel="stylesheet" href="chatbot.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9f9fc; color: #1a1a2e; min-height: 100vh; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); padding: 1rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid #ededf5; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: #1a1a2e; text-decoration: none; }
+        .brand-dot { width: 11px; height: 11px; background: linear-gradient(135deg,#ff6b35,#f7931e); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+        .btn-back-nav { background: transparent; border: 1.5px solid #e0e0ee; color: #4a4a6a; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; text-decoration: none; margin-left: auto; }
+        .btn-back-nav:hover { border-color: #ff6b35; color: #ff6b35; }
+
+        /* PAGE */
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
+        .page-title { font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 2rem; text-align: center; }
+
+        /* PROGRESS STEPS */
+        .progress { display: flex; align-items: center; justify-content: center; margin-bottom: 3rem; gap: 0; }
+        .step-item { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+        .step-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; border: 2px solid #e0e0ee; color: #aaa; background: #fff; transition: all 0.3s; }
+        .step-circle.active { background: linear-gradient(135deg,#ff6b35,#f7931e); border-color: transparent; color: #fff; }
+        .step-circle.done { background: #18a349; border-color: transparent; color: #fff; }
+        .step-label { font-size: 0.78rem; font-weight: 600; color: #aaa; }
+        .step-label.active { color: #ff6b35; }
+        .step-line { width: 80px; height: 2px; background: #e0e0ee; margin: 0 0.5rem; margin-bottom: 1.2rem; transition: background 0.3s; }
+        .step-line.active { background: linear-gradient(90deg,#ff6b35,#f7931e); }
+
+        /* LAYOUT */
+        .checkout-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start; }
+
+        /* FORM CARD */
+        .form-card { background: #fff; border: 1px solid #ededf5; border-radius: 16px; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .card-title { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #4a4a6a; margin-bottom: 0.4rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.8rem 1rem; background: #fafafa; border: 1.5px solid #e0e0ee; border-radius: 9px; color: #1a1a2e; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: #ff6b35; background: #fff; }
+        .form-group input[readonly] { background: #f5f5f5; color: #888; cursor: default; }
+        .btn-next { width: 100%; background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; border: none; padding: 1.1rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; box-shadow: 0 4px 14px rgba(255,107,53,.25); }
+        .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,.35); }
+
+        /* PAYMENT STEP */
+        .payment-options { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.75rem; }
+        .pay-option { cursor: pointer; }
+        .pay-option input[type="radio"] { display: none; }
+        .pay-card { background: #fafafa; border: 2px solid #e0e0ee; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; transition: all 0.2s; }
+        .pay-option input[type="radio"]:checked + .pay-card { border-color: #ff6b35; background: #fff8f5; }
+        .pay-card:hover { border-color: #f7931e; }
+        .pay-icon { font-size: 2rem; flex-shrink: 0; }
+        .pay-info h4 { font-size: 0.98rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.2rem; }
+        .pay-info p { font-size: 0.82rem; color: #8888aa; }
+        .pay-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+        .btn-back-step { flex: 1; background: #fafafa; border: 1.5px solid #e0e0ee; color: #4a4a6a; padding: 1rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .btn-back-step:hover { border-color: #ff6b35; color: #ff6b35; }
+        .btn-place { flex: 2; background: linear-gradient(135deg,#18a349,#22c55e); color: #fff; border: none; padding: 1rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(34,197,94,.25); }
+        .btn-place:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(34,197,94,.35); }
+        .btn-place:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* DEMO PAYMENT NOTICE */
+        .demo-notice { background: #fff8f0; border: 1px solid #ffd4b8; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.85rem; color: #7a4a1a; }
+        .demo-notice .dn-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+        /* ORDER SUMMARY */
+        .summary-box { background: #fff; border: 1px solid #ededf5; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 90px; }
+        .summary-box h3 { font-size: 1rem; font-weight: 800; color: #1a1a2e; margin-bottom: 1.5rem; }
+        .summary-items { margin-bottom: 1.25rem; }
+        .s-item { display: flex; justify-content: space-between; font-size: 0.88rem; color: #5a5a7a; margin-bottom: 0.7rem; gap: 1rem; }
+        .s-item span:first-child { flex: 1; }
+        .s-item span:last-child { font-weight: 600; white-space: nowrap; }
+        .s-divider { height: 1px; background: #f0f0f8; margin: 1rem 0; }
+        .s-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #5a5a7a; margin-bottom: 0.7rem; }
+        .s-row.total { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; padding-top: 0.75rem; border-top: 2px solid #f0f0f8; }
+        .text-green { color: #18a349; font-weight: 600; }
+        .sec-badges { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+        .sec-badge { flex: 1; text-align: center; background: #fafafa; border-radius: 9px; padding: 0.6rem 0.25rem; font-size: 0.72rem; color: #8888aa; font-weight: 600; }
+        .sec-badge div { font-size: 1.2rem; margin-bottom: 0.2rem; }
+
+        /* RAZORPAY MODAL */
+        .razorpay-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .razorpay-modal.show { display: flex; }
+        .razorpay-content {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        }
+        .razorpay-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .razorpay-header h2 {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+        .razorpay-header p {
+            color: #8888aa;
+            font-size: 0.95rem;
+        }
+        .razorpay-amount {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .razorpay-amount .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        .razorpay-amount .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .razorpay-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .razorpay-method {
+            border: 2px solid #e0e0ee;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .razorpay-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .razorpay-method.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        .razorpay-method-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .razorpay-method-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .razorpay-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .razorpay-btn-cancel {
+            flex: 1;
+            background: #f0f0f8;
+            border: none;
+            color: #4a4a6a;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .razorpay-btn-cancel:hover {
+            background: #e0e0ee;
+        }
+        .razorpay-btn-pay {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
+        }
+        .razorpay-btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(102, 126, 234, 0.4);
+        }
+        .razorpay-btn-pay:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .razorpay-security {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #8888aa;
+        }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.9rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; color: #fff; background: #1a1a2e; max-width: 320px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #18a349; }
+        .toast.error { background: #e8304a; }
+
+        @media (max-width: 850px) { .checkout-layout { grid-template-columns: 1fr; } .summary-box { position: static; } }
+        @media (max-width: 580px) { .navbar { padding: 0.85rem 1.25rem; } .page-wrap { padding: 1.5rem 1rem 4rem; } .form-row { grid-template-columns: 1fr; } .step-line { width: 40px; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="brand"><div class="brand-dot"></div>BharatBazaar</a>
+    <a href="cart.html" class="btn-back-nav">← Back to Cart</a>
+</nav>
+
+<div class="page-wrap">
+    <h1 class="page-title">Checkout</h1>
+
+    <!-- Progress -->
+    <div class="progress">
+        <div class="step-item">
+            <div class="step-circle active" id="step1circle">1</div>
+            <div class="step-label active" id="step1label">Shipping</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-item">
+            <div class="step-circle" id="step2circle">2</div>
+            <div class="step-label" id="step2label">Payment</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-item">
+            <div class="step-circle" id="step3circle">3</div>
+            <div class="step-label" id="step3label">Confirm</div>
+        </div>
+    </div>
+
+    <div class="checkout-layout">
+        <!-- FORM AREA -->
+        <div>
+            <!-- STEP 1: Shipping -->
+            <div class="form-card" id="shippingStep">
+                <div class="card-title">📦 Shipping Information</div>
+                <form id="shippingForm" onsubmit="return false">
+                    <div class="form-row">
+                        <div class="form-group"><label>Full Name *</label><input type="text" id="fullName" required placeholder="Riya Sharma"></div>
+                        <div class="form-group"><label>Phone Number *</label><input type="tel" id="phone" required placeholder="9876543210" pattern="[0-9]{10}"></div>
+                    </div>
+                    <div class="form-group"><label>Email Address *</label><input type="email" id="email" required placeholder="riya@example.com"></div>
+                    <div class="form-group"><label>House / Street Address *</label><input type="text" id="address" required placeholder="123, MG Road, Koregaon Park"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>City *</label><input type="text" id="city" required placeholder="Mumbai"></div>
+                        <div class="form-group"><label>State *</label>
+                            <select id="state" required>
+                                <option value="">Select State</option>
+                                <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Pincode *</label><input type="text" id="pincode" required placeholder="400001" pattern="[0-9]{6}" maxlength="6"></div>
+                        <div class="form-group"><label>Country</label><input type="text" id="country" value="India" readonly></div>
+                    </div>
+                    <button type="button" class="btn-next" onclick="goToPayment()">Continue to Payment →</button>
+                </form>
+            </div>
+
+            <!-- STEP 2: Payment -->
+            <div class="form-card" id="paymentStep" style="display:none">
+                <div class="card-title">💳 Payment Method</div>
+                <div class="demo-notice">
+                    <span class="dn-icon">ℹ️</span>
+                    <span>This is a <strong>demo checkout</strong>. No real payment is processed. Select any method and place the order to test the full flow.</span>
+                </div>
+                <div class="payment-options">
+                    <label class="pay-option">
+                        <input type="radio" name="payment" value="COD" checked>
+                        <div class="pay-card">
+                            <div class="pay-icon">💵</div>
+                            <div class="pay-info"><h4>Cash on Delivery</h4><p>Pay when you receive your order</p></div>
+                        </div>
+                    </label>
+                    <label class="pay-option">
+                        <input type="radio" name="payment" value="UPI">
+                        <div class="pay-card">
+                            <div class="pay-icon">📱</div>
+                            <div class="pay-info"><h4>UPI / QR Code</h4><p>GPay, PhonePe, Paytm, BHIM</p></div>
+                        </div>
+                    </label>
+                    <label class="pay-option">
+                        <input type="radio" name="payment" value="Card">
+                        <div class="pay-card">
+                            <div class="pay-icon">💳</div>
+                            <div class="pay-info"><h4>Credit / Debit Card</h4><p>Visa, Mastercard, RuPay</p></div>
+                        </div>
+                    </label>
+                    <label class="pay-option">
+                        <input type="radio" name="payment" value="NetBanking">
+                        <div class="pay-card">
+                            <div class="pay-icon">🏦</div>
+                            <div class="pay-info"><h4>Net Banking</h4><p>All major Indian banks supported</p></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="pay-actions">
+                    <button class="btn-back-step" onclick="goBackToShipping()">← Back</button>
+                    <button class="btn-place" id="placeOrderBtn" onclick="placeOrder()">✓ Place Order</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ORDER SUMMARY SIDEBAR -->
+        <div>
+            <div class="summary-box">
+                <h3>Order Summary</h3>
+                <div class="summary-items" id="summaryItems">
+                    <p style="color:#9999bb;font-size:0.85rem">Loading…</p>
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-row"><span>Subtotal</span><span id="sSubtotal">₹0</span></div>
+                <div class="s-row"><span>Shipping</span><span class="text-green">FREE</span></div>
+                <div class="s-row"><span>Tax (18% GST)</span><span id="sTax">₹0</span></div>
+                <div class="s-row total"><span>Total</span><span id="sTotal">₹0</span></div>
+                <div class="sec-badges">
+                    <div class="sec-badge"><div>🔒</div>Secure</div>
+                    <div class="sec-badge"><div>✅</div>Protected</div>
+                    <div class="sec-badge"><div>🚚</div>Free Ship</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RAZORPAY PAYMENT MODAL -->
+<div id="razorpayModal" class="razorpay-modal">
+    <div class="razorpay-content">
+        <div class="razorpay-header">
+            <h2>💳 Razorpay Payment</h2>
+            <p>Complete your payment securely</p>
+        </div>
+        
+        <div class="razorpay-amount">
+            <div class="label">Amount to Pay</div>
+            <div class="price" id="razorpayAmount">₹999</div>
+        </div>
+
+        <div class="razorpay-methods">
+            <div class="razorpay-method selected" onclick="selectPaymentMethod(this, 'upi')">
+                <div class="razorpay-method-icon">📱</div>
+                <div class="razorpay-method-name">UPI</div>
+            </div>
+            <div class="razorpay-method" onclick="selectPaymentMethod(this, 'card')">
+                <div class="razorpay-method-icon">💳</div>
+                <div class="razorpay-method-name">Card</div>
+            </div>
+            <div class="razorpay-method" onclick="selectPaymentMethod(this, 'netbanking')">
+                <div class="razorpay-method-icon">🏦</div>
+                <div class="razorpay-method-name">Net Banking</div>
+            </div>
+            <div class="razorpay-method" onclick="selectPaymentMethod(this, 'wallet')">
+                <div class="razorpay-method-icon">👛</div>
+                <div class="razorpay-method-name">Wallet</div>
+            </div>
+        </div>
+
+        <div class="razorpay-buttons">
+            <button class="razorpay-btn-cancel" onclick="closeRazorpayModal()">Cancel</button>
+            <button class="razorpay-btn-pay" id="razorpayPayBtn" onclick="processPayment()">Pay Now</button>
+        </div>
+
+        <div class="razorpay-security">
+            🔒 Payments secured by Razorpay | 100% Safe & Secure
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="chatbot.js"></script>
+<script>
+// API configuration
+const API_BASE = window.location.origin; // http://localhost:5001
+
+let shippingInfo = {};
+let cartItems = [];
+
+// ── Guest session ─────────────────────────────────────────────────────────────
+function getGuestId() {
+    let id = localStorage.getItem('guestSessionId');
+    if (!id) { id = 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2,9); localStorage.setItem('guestSessionId', id); }
+    return id;
+}
+function apiHeaders(json = true) {
+    const token = localStorage.getItem('authToken');
+    const h = {};
+    if (json) h['Content-Type'] = 'application/json';
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    else h['X-Guest-Session'] = getGuestId();
+    return h;
+}
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── Load cart for summary ─────────────────────────────────────────────────────
+async function loadCartSummary() {
+    try {
+        const res = await fetch('/api/cart', { headers: apiHeaders(false) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed to load cart');
+        cartItems = d.cart?.items || [];
+        if (!cartItems.length) { window.location.href = 'cart.html'; return; }
+        renderSummary(cartItems);
+    } catch (err) {
+        showToast('Could not load cart: ' + err.message, 'error');
+        setTimeout(() => window.location.href = 'cart.html', 2000);
+    }
+}
+
+function renderSummary(items) {
+    let subtotal = 0;
+    const html = items.map(item => {
+        const p = item.productId;
+        const lineTotal = (p.price || 0) * item.quantity;
+        subtotal += lineTotal;
+        return `<div class="s-item"><span>${p.name} × ${item.quantity}</span><span>₹${lineTotal.toLocaleString('en-IN')}</span></div>`;
+    }).join('');
+    document.getElementById('summaryItems').innerHTML = html;
+    const tax = Math.round(subtotal * 0.18);
+    document.getElementById('sSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+    document.getElementById('sTax').textContent = '₹' + tax.toLocaleString('en-IN');
+    document.getElementById('sTotal').textContent = '₹' + (subtotal + tax).toLocaleString('en-IN');
+}
+
+// ── Step navigation ───────────────────────────────────────────────────────────
+function goToPayment() {
+    const form = document.getElementById('shippingForm');
+    if (!form.reportValidity()) return;
+    shippingInfo = {
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        state: document.getElementById('state').value,
+        pincode: document.getElementById('pincode').value.trim(),
+        country: 'India'
+    };
+    document.getElementById('shippingStep').style.display = 'none';
+    document.getElementById('paymentStep').style.display = 'block';
+    // Progress indicators
+    document.getElementById('step1circle').className = 'step-circle done'; document.getElementById('step1circle').textContent = '✓';
+    document.getElementById('step2circle').className = 'step-circle active';
+    document.getElementById('step2label').className = 'step-label active';
+    document.getElementById('line1').className = 'step-line active';
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+function goBackToShipping() {
+    document.getElementById('paymentStep').style.display = 'none';
+    document.getElementById('shippingStep').style.display = 'block';
+    document.getElementById('step1circle').className = 'step-circle active'; document.getElementById('step1circle').textContent = '1';
+    document.getElementById('step2circle').className = 'step-circle';
+    document.getElementById('step2label').className = 'step-label';
+    document.getElementById('line1').className = 'step-line';
+}
+
+// ── Place order ───────────────────────────────────────────────────────────────
+async function placeOrder() {
+    const btn = document.getElementById('placeOrderBtn');
+    btn.disabled = true; btn.textContent = 'Placing order…';
+
+    const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+    try {
+        const res = await fetch('/api/orders/create', {
+            method: 'POST',
+            headers: apiHeaders(),
+            body: JSON.stringify({
+                shippingAddress: shippingInfo,
+                paymentMethod
+            })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed to place order');
+
+        // Step 3 indicator
+        document.getElementById('step2circle').className = 'step-circle done'; document.getElementById('step2circle').textContent = '✓';
+        document.getElementById('step3circle').className = 'step-circle done'; document.getElementById('step3circle').textContent = '✓';
+        document.getElementById('step3label').className = 'step-label active';
+        document.getElementById('line2').className = 'step-line active';
+
+        // Save order data for confirmation page
+        localStorage.setItem('lastOrder', JSON.stringify({
+            orderId: d.order.orderId,
+            orderDate: d.order.createdAt || new Date().toISOString(),
+            items: d.order.items,
+            shippingAddress: d.order.shippingAddress,
+            pricing: d.order.pricing,
+            payment: { method: d.order.payment.method }
+        }));
+
+        showToast('Order placed successfully! 🎉', 'success');
+        setTimeout(() => window.location.href = 'orderconfirmation.html', 1200);
+    } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false; btn.textContent = '✓ Place Order';
+    }
+}
+
+// ── RAZORPAY PAYMENT INTEGRATION ──────────────────────────────────────────────
+function openRazorpayModal(amount) {
+    document.getElementById('razorpayAmount').textContent = '₹' + amount.toLocaleString('en-IN');
+    document.getElementById('razorpayModal').classList.add('show');
+}
+
+function closeRazorpayModal() {
+    document.getElementById('razorpayModal').classList.remove('show');
+}
+
+function selectPaymentMethod(el, method) {
+    document.querySelectorAll('.razorpay-method').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    window.selectedPaymentMethod = method;
+}
+
+async function processPayment() {
+    const btn = document.getElementById('razorpayPayBtn');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+
+    try {
+        const amountText = document.getElementById('razorpayAmount').textContent;
+        const amount = parseFloat(amountText.replace('₹', '').replace(/,/g, ''));
+
+        // Create Razorpay order on backend
+        const orderResponse = await fetch(`${API_BASE}/api/razorpay/create-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: amount,
+                currency: 'INR',
+                receipt: `rcpt_${Date.now()}`,
+                notes: {
+                    orderRef: localStorage.getItem('lastOrderId') || 'manual_payment'
+                }
+            })
+        });
+
+        if (!orderResponse.ok) throw new Error('Failed to create Razorpay order');
+
+        const orderData = await orderResponse.json();
+
+        // DEMO MODE: Simulate payment success
+        if (orderData.demoMode) {
+            console.log('[BharatBazaar] Running in DEMO MODE - simulating payment');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Verify demo payment
+            const verifyResponse = await fetch(`${API_BASE}/api/razorpay/verify-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    razorpay_order_id: orderData.orderId,
+                    razorpay_payment_id: `demo_pay_${Date.now()}`,
+                    razorpay_signature: 'demo_signature',
+                    orderRefId: localStorage.getItem('lastOrderId')
+                })
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.verified) {
+                showToast('✅ Payment successful! Order confirmed. (Demo Mode)', 'success');
+                closeRazorpayModal();
+                setTimeout(() => {
+                    window.location.href = 'orderconfirmation.html';
+                }, 1500);
+            }
+            return;
+        }
+
+        // REAL RAZORPAY MODE: Initialize Razorpay checkout
+        if (typeof Razorpay === 'undefined') {
+            throw new Error('Razorpay SDK not loaded. Please refresh the page.');
+        }
+
+        const options = {
+            key: orderData.razorpayKeyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: 'BharatBazaar',
+            description: 'Order Payment',
+            order_id: orderData.orderId,
+            handler: async function(response) {
+                // Verify payment on backend
+                const verifyResponse = await fetch(`${API_BASE}/api/razorpay/verify-payment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        orderRefId: localStorage.getItem('lastOrderId')
+                    })
+                });
+
+                const verifyData = await verifyResponse.json();
+
+                if (verifyData.verified) {
+                    showToast('✅ Payment successful! Order confirmed.', 'success');
+                    closeRazorpayModal();
+                    setTimeout(() => {
+                        window.location.href = 'orderconfirmation.html';
+                    }, 1500);
+                } else {
+                    throw new Error('Payment verification failed');
+                }
+            },
+            prefill: {
+                name: document.getElementById('name')?.value || '',
+                email: document.getElementById('email')?.value || '',
+                contact: document.getElementById('phone')?.value || ''
+            },
+            theme: {
+                color: '#ff6b35'
+            },
+            modal: {
+                ondismiss: function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Pay Now';
+                }
+            }
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+
+    } catch (err) {
+        showToast('❌ Payment failed: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Pay Now';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', loadCartSummary);
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

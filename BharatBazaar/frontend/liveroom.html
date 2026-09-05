@@ -1,0 +1,366 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Room - BHARATBAZAAR</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%); color: #e8ecff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        
+        .live-room-container { height: 100vh; display: flex; flex-direction: column; }
+        .live-room-header { background: rgba(15,20,25,0.95); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(122,60,240,0.2); }
+        .room-info { display: flex; align-items: center; gap: 1rem; }
+        .live-indicator { background: #FF4D6D; color: white; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+        .room-title { color: #fff; font-size: 1.2rem; font-weight: 600; }
+        .room-timer { color: #19D3DA; font-size: 1.3rem; font-weight: 700; font-family: 'Courier New', monospace; }
+        
+        .live-room-main { flex: 1; display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem; padding: 1.5rem; overflow: hidden; }
+        .video-section { position: relative; }
+        .video-container { background: #000; border-radius: 16px; overflow: hidden; position: relative; height: 100%; }
+        .seller-video { width: 100%; height: 100%; object-fit: cover; }
+        .customer-video { position: absolute; bottom: 20px; right: 20px; width: 200px; height: 150px; border-radius: 12px; border: 2px solid #7A3CF0; object-fit: cover; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        
+        .video-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; background: rgba(15,20,25,0.9); padding: 1rem 1.5rem; border-radius: 50px; }
+        .btn-control { background: rgba(30, 35, 64, 0.8); border: none; color: #fff; padding: 0.8rem 1.5rem; border-radius: 25px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s; }
+        .btn-control:hover { transform: translateY(-2px); }
+        .btn-control.accept { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; }
+        .btn-control.end { background: linear-gradient(135deg, #FF4D6D, #FF66C4); color: white; }
+        .btn-control.mute, .btn-control.video { background: rgba(30, 35, 64, 0.8); }
+        .btn-control:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .status-indicator { position: absolute; top: 20px; left: 20px; background: rgba(15,20,25,0.9); padding: 0.6rem 1.2rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+        .status-indicator.connected { color: #32E685; }
+        .status-indicator.disconnected { color: #FF4D6D; }
+        .status-indicator.waiting { color: #FFB547; }
+        .status-indicator.live { color: #FF4D6D; }
+        
+        .sidebar-section { display: flex; flex-direction: column; gap: 1.5rem; }
+        .products-panel, .chat-panel { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; }
+        .products-panel { max-height: 40%; overflow-y: auto; }
+        .chat-panel { flex: 1; display: flex; flex-direction: column; }
+        
+        .panel-title { color: #fff; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .products-list-live { display: flex; flex-direction: column; gap: 1rem; }
+        .product-item-live { display: flex; align-items: center; gap: 1rem; background: rgba(20, 25, 44, 0.5); padding: 0.8rem; border-radius: 10px; }
+        .product-item-live img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .product-info-live { flex: 1; }
+        .product-name-live { color: #fff; font-weight: 600; font-size: 0.95rem; }
+        .product-price-live { color: #32E685; font-weight: 700; margin-top: 0.3rem; }
+        .btn-show-product { background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-show-product:hover { transform: translateY(-2px); }
+        
+        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+        .chat-message { padding: 0.8rem; border-radius: 10px; font-size: 0.95rem; }
+        .chat-message.system { background: rgba(25, 211, 218, 0.1); color: #19D3DA; border-left: 3px solid #19D3DA; }
+        .chat-message.sent { background: linear-gradient(135deg, rgba(122,60,240,0.2), rgba(255,102,196,0.2)); color: #fff; align-self: flex-end; max-width: 80%; }
+        .chat-message.received { background: rgba(30, 35, 64, 0.8); color: #c9ceef; align-self: flex-start; max-width: 80%; }
+        
+        .chat-input-container { display: flex; gap: 0.8rem; }
+        .chat-input { flex: 1; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; padding: 0.8rem; color: #fff; font-size: 1rem; }
+        .chat-input:focus { outline: none; border-color: #7A3CF0; }
+        .btn-send { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-send:hover { transform: translateY(-2px); }
+        
+        @media (max-width: 1024px) {
+            .live-room-main { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+            .sidebar-section { flex-direction: row; max-height: 300px; }
+            .products-panel, .chat-panel { flex: 1; max-height: none; }
+            .customer-video { width: 150px; height: 112px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="live-room-container">
+        <div class="live-room-header">
+            <div class="room-info">
+                <span class="live-indicator">🔴 LIVE</span>
+                <span class="room-title">Live Shopping Session</span>
+            </div>
+            <div class="room-timer" id="roomTimer">00:00</div>
+        </div>
+
+        <div class="live-room-main">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="localVideo" autoplay muted playsinline class="seller-video"></video>
+                    <video id="remoteVideo" autoplay playsinline class="customer-video"></video>
+                    
+                    <div class="video-controls">
+                        <button id="acceptBtn" onclick="acceptCall()" class="btn-control accept" disabled>
+                            <span>📞</span> Accept Call
+                        </button>
+                        <button id="endBtn" onclick="endCall()" class="btn-control end" disabled>
+                            <span>⏹️</span> End Call
+                        </button>
+                        <button class="btn-control mute" onclick="toggleMute()">
+                            <span id="muteIcon">🔇</span>
+                        </button>
+                        <button class="btn-control video" onclick="toggleVideo()">
+                            <span id="videoIcon">📹</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="status" class="status-indicator disconnected">
+                    Connecting...
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="products-panel">
+                    <h3 class="panel-title">
+                        <span>📦</span> Products
+                    </h3>
+                    <div class="products-list-live" id="productsListLive">
+                        <div class="product-item-live">
+                            <img src="https://via.placeholder.com/60x60/1E2340/E8ECFF?text=P1" alt="Product">
+                            <div class="product-info-live">
+                                <div class="product-name-live">iPhone 15 Pro</div>
+                                <div class="product-price-live">₹1,29,999</div>
+                            </div>
+                            <button class="btn-show-product" onclick="showcaseProduct('prod1')">
+                                Show
+                            </button>
+                        </div>
+                        
+                        <div class="product-item-live">
+                            <img src="https://via.placeholder.com/60x60/1E2340/E8ECFF?text=P2" alt="Product">
+                            <div class="product-info-live">
+                                <div class="product-name-live">AirPods Pro</div>
+                                <div class="product-price-live">₹24,999</div>
+                            </div>
+                            <button class="btn-show-product" onclick="showcaseProduct('prod2')">
+                                Show
+                            </button>
+                        </div>
+                        
+                        <div class="product-item-live">
+                            <img src="https://via.placeholder.com/60x60/1E2340/E8ECFF?text=P3" alt="Product">
+                            <div class="product-info-live">
+                                <div class="product-name-live">MacBook Pro</div>
+                                <div class="product-price-live">₹1,99,999</div>
+                            </div>
+                            <button class="btn-show-product" onclick="showcaseProduct('prod3')">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-panel">
+                    <h3 class="panel-title">
+                        <span>💬</span> Chat
+                    </h3>
+                    <div class="chat-messages" id="chatBox">
+                        <div class="chat-message system">
+                            Session started. Say hello to your customer!
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <input 
+                            type="text" 
+                            id="msg" 
+                            placeholder="Type a message..." 
+                            class="chat-input"
+                        />
+                        <button onclick="sendMsg()" class="btn-send">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SOCKET_URL = "https://abc123-45-67-89-10.ngrok-free.app"; // Replace with your ngrok URL
+        const socket = io(SOCKET_URL, {transports: ['websocket', 'polling']});
+        const roomId = "room1";
+        const sellerId = "seller1";
+        let pc, localStream;
+        let isMuted = false;
+        let isVideoOff = false;
+        let sessionStartTime = null;
+        let timerInterval = null;
+
+        const config = {
+            iceServers: [
+                {urls: 'stun:stun.l.google.com:19302'},
+                {urls: 'stun:stun1.l.google.com:19302'}
+            ]
+        };
+
+        socket.on('connect', () => {
+            document.getElementById('status').textContent = 'Connected - Waiting for calls';
+            document.getElementById('status').className = 'status-indicator connected';
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'status-indicator disconnected';
+        });
+
+        socket.on('incoming-call', data => {
+            document.getElementById('status').textContent = `Incoming call from ${data.buyerId}`;
+            document.getElementById('status').className = 'status-indicator waiting';
+            document.getElementById('acceptBtn').disabled = false;
+            addChatMessage(`System: Incoming call from ${data.buyerId}`, 'system');
+        });
+
+        async function acceptCall() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                document.getElementById('localVideo').srcObject = localStream;
+                
+                pc = new RTCPeerConnection(config);
+                localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+                pc.ontrack = e => document.getElementById('remoteVideo').srcObject = e.streams[0];
+                pc.onicecandidate = e => {
+                    if (e.candidate) socket.emit('ice-candidate', {roomId, candidate: e.candidate});
+                };
+                
+                socket.emit('seller-accept', {roomId, sellerId});
+                socket.emit('join-room', {roomId, userId: sellerId});
+                
+                document.getElementById('status').textContent = 'In call';
+                document.getElementById('status').className = 'status-indicator live';
+                document.getElementById('acceptBtn').disabled = true;
+                document.getElementById('endBtn').disabled = false;
+                
+                sessionStartTime = Date.now();
+                timerInterval = setInterval(updateSessionTimer, 1000);
+                
+                addChatMessage('System: Call connected', 'system');
+            } catch (error) {
+                console.error('Error accepting call:', error);
+                addChatMessage('System: Error accessing camera/microphone', 'system');
+            }
+        }
+
+        socket.on('offer', async offer => {
+            if (!pc) await acceptCall();
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            socket.emit('answer', {roomId, answer});
+        });
+
+        socket.on('ice-candidate', async candidate => {
+            if (pc && candidate) await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        });
+
+        socket.on('chat-message', msg => {
+            addChatMessage(msg, 'received');
+        });
+
+        function sendMsg() {
+            const msgInput = document.getElementById('msg');
+            const msg = msgInput.value.trim();
+            if (!msg) return;
+            
+            socket.emit('chat-message', {roomId, msg: "Seller: " + msg});
+            addChatMessage("You: " + msg, 'sent');
+            msgInput.value = "";
+        }
+
+        function addChatMessage(msg, type = 'received') {
+            const box = document.getElementById('chatBox');
+            const div = document.createElement('div');
+            div.className = `chat-message ${type}`;
+            div.textContent = msg;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function endCall() {
+            if (!confirm('End this session?')) return;
+            
+            if (localStream) localStream.getTracks().forEach(track => track.stop());
+            if (pc) pc.close();
+            
+            document.getElementById('localVideo').srcObject = null;
+            document.getElementById('remoteVideo').srcObject = null;
+            document.getElementById('status').textContent = 'Connected - Waiting for calls';
+            document.getElementById('status').className = 'status-indicator connected';
+            document.getElementById('acceptBtn').disabled = false;
+            document.getElementById('endBtn').disabled = true;
+            
+            clearInterval(timerInterval);
+            sessionStartTime = null;
+            
+            addChatMessage('System: Call ended', 'system');
+        }
+
+        function toggleMute() {
+            if (!localStream) return;
+            
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                isMuted = !isMuted;
+                audioTrack.enabled = !isMuted;
+                document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
+            }
+        }
+
+        function toggleVideo() {
+            if (!localStream) return;
+            
+            const videoTrack = localStream.getVideoTracks()[0];
+            if (videoTrack) {
+                isVideoOff = !isVideoOff;
+                videoTrack.enabled = !isVideoOff;
+                document.getElementById('videoIcon').textContent = isVideoOff ? '📹❌' : '📹';
+            }
+        }
+
+        function showcaseProduct(productId) {
+            socket.emit('showcase-product', {roomId, productId});
+            addChatMessage('System: Showcasing product to customer', 'system');
+        }
+
+        function updateSessionTimer() {
+            if (!sessionStartTime) return;
+            
+            const elapsed = Date.now() - sessionStartTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            document.getElementById('roomTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        document.getElementById('msg').addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMsg();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const products = JSON.parse(localStorage.getItem('sellerProducts')) || [];
+            if (products.length > 0) {
+                const productsListLive = document.getElementById('productsListLive');
+                productsListLive.innerHTML = '';
+                
+                products.slice(0, 5).forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product-item-live';
+                    productDiv.innerHTML = `
+                        <img src="${product.images[0]}" alt="${product.name}">
+                        <div class="product-info-live">
+                            <div class="product-name-live">${product.name}</div>
+                            <div class="product-price-live">₹${product.price.toLocaleString()}</div>
+                        </div>
+                        <button class="btn-show-product" onclick="showcaseProduct('${product.id}')">
+                            Show
+                        </button>
+                    `;
+                    productsListLive.appendChild(productDiv);
+                });
+            }
+        });
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

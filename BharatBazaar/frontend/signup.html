@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - BHARATBAZAAR</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%); color: #e8ecff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        
+        .navbar { background: rgba(15,20,25,0.95); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(122,60,240,0.2); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .brand-dot { width: 14px; height: 14px; background: linear-gradient(135deg, #19D3DA, #7A3CF0); border-radius: 50%; }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: 1px; }
+        .btn-text { color: #19D3DA; text-decoration: none; font-weight: 600; }
+        
+        .auth-section { padding: 3rem 2rem; display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); }
+        .auth-container { max-width: 600px; width: 100%; }
+        .auth-card { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 20px; padding: 3rem; }
+        .auth-title { font-size: 2rem; background: linear-gradient(135deg, #7A3CF0 0%, #19D3DA 85%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; text-align: center; }
+        .auth-subtitle { color: #c9ceef; text-align: center; margin-bottom: 2rem; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; color: #c9ceef; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="password"] { width: 100%; padding: 0.9rem; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; color: #fff; font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: #7A3CF0; }
+        
+        .role-label { display: block; color: #c9ceef; margin-bottom: 1rem; font-weight: 600; }
+        .role-options { display: flex; flex-direction: column; gap: 1rem; }
+        .radio-card { display: block; cursor: pointer; }
+        .radio-card input[type="radio"] { display: none; }
+        .radio-content { background: rgba(20, 25, 44, 0.5); border: 2px solid rgba(122,60,240,0.3); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: 0.2s; }
+        .radio-card input[type="radio"]:checked + .radio-content { border-color: #7A3CF0; background: rgba(122,60,240,0.1); }
+        .radio-icon { font-size: 2rem; }
+        .radio-text { color: #fff; font-weight: 700; flex: 1; }
+        .radio-desc { color: #9aa1d2; font-size: 0.85rem; }
+        
+        .checkbox-group { margin-top: 1.5rem; }
+        .checkbox-label { display: flex; align-items: center; gap: 0.8rem; color: #c9ceef; cursor: pointer; }
+        .checkbox-label input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .link-primary { color: #19D3DA; text-decoration: none; font-weight: 600; }
+        
+        .btn-submit { width: 100%; background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; border: none; padding: 1.2rem; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 1.5rem; transition: 0.2s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(122,60,240,0.4); }
+        
+        .form-footer { text-align: center; margin-top: 1.5rem; color: #c9ceef; }
+        
+        .error-message { background: rgba(255,77,109,0.2); color: #FF4D6D; padding: 1rem; border-radius: 10px; margin-top: 1rem; border: 1px solid rgba(255,77,109,0.3); }
+        .success-message { background: rgba(50,230,133,0.2); color: #32E685; padding: 1rem; border-radius: 10px; margin-top: 1rem; border: 1px solid rgba(50,230,133,0.3); }
+        
+        .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        @media (max-width: 768px) {
+            .auth-card { padding: 2rem 1.5rem; }
+            .auth-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <a href="index.html" class="brand-text">BHARATBAZAAR</a>
+            </div>
+            <div class="nav-actions">
+                <a href="index.html" class="btn-text">← Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Join the Live Shopping Experience</p>
+                
+                <form id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Create a strong password" minlength="6" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="role-label">I want to register as:</label>
+                        <div class="role-options">
+                            <label class="radio-card">
+                                <input type="radio" name="role" value="customer" checked>
+                                <div class="radio-content">
+                                    <span class="radio-icon">🛍️</span>
+                                    <span class="radio-text">Customer</span>
+                                    <span class="radio-desc">Browse and buy products</span>
+                                </div>
+                            </label>
+                            
+                            <label class="radio-card">
+                                <input type="radio" name="role" value="seller">
+                                <div class="radio-content">
+                                    <span class="radio-icon">👨‍💼</span>
+                                    <span class="radio-text">Seller</span>
+                                    <span class="radio-desc">Sell products and manage rooms</span>
+                                </div>
+                            </label>
+                            
+                            <label class="radio-card">
+                                <input type="radio" name="role" value="salesperson">
+                                <div class="radio-content">
+                                    <span class="radio-icon">📞</span>
+                                    <span class="radio-text">Salesperson</span>
+                                    <span class="radio-desc">Host live product demos</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="terms" required>
+                            <span>I agree to the <a href="#" class="link-primary">Terms & Conditions</a> and <a href="#" class="link-primary">Privacy Policy</a></span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <span id="btnText">Create Account</span>
+                        <span id="btnLoader" class="loader" style="display: none;"></span>
+                    </button>
+                    
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="login.html" class="link-primary">Login</a></p>
+                    </div>
+                </form>
+                
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                <div id="successMessage" class="success-message" style="display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.querySelector('input[name="role"]:checked').value;
+            
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (password !== confirmPassword) {
+                errorMsg.textContent = 'Passwords do not match!';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('btnText').style.display = 'none';
+            document.getElementById('btnLoader').style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, phone, password, role })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Signup failed');
+                }
+                
+                // Store token and user data
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userId', data.user._id);
+                localStorage.setItem('userRole', data.user.role);
+                localStorage.setItem('userName', data.user.name);
+                localStorage.setItem('userEmail', data.user.email);
+                
+                successMsg.textContent = 'Account created successfully! Redirecting...';
+                successMsg.style.display = 'block';
+                
+                setTimeout(() => {
+                    if (role === 'customer') {
+                        window.location.href = 'customerhome.html';
+                    } else if (role === 'seller') {
+                        window.location.href = 'sellerdashboard.html';
+                    } else if (role === 'salesperson') {
+                        window.location.href = 'salespersondashboard.html';
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorMsg.textContent = error.message || 'Unable to create account. Please try again.';
+                errorMsg.style.display = 'block';
+                document.getElementById('btnText').style.display = 'inline-block';
+                document.getElementById('btnLoader').style.display = 'none';
+            }
+        });
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

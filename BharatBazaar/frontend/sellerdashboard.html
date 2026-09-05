@@ -1,0 +1,1041 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms Control - BHARATBAZAAR</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #7A3CF0, #FF66C4);
+            --secondary-gradient: linear-gradient(135deg, #19D3DA, #4DE3EA);
+            --success-gradient: linear-gradient(135deg, #32E685, #5CF0A0);
+            --bg-dark: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            --card-bg: rgba(30, 35, 64, 0.5);
+            --card-border: rgba(122,60,240,0.2);
+            --text-high: #e8ecff;
+            --text-medium: #c9ceef;
+            --text-low: #9aa1d2;
+            --accent-violet: #7A3CF0;
+            --accent-cyan: #19D3DA;
+            --accent-pink: #FF66C4;
+            --success: #32E685;
+            --error: #FF4D6D;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-high);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Navbar with Glass Morphism */
+        .navbar {
+            background: rgba(15,20,25,0.85);
+            backdrop-filter: blur(20px);
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .brand { display: flex; align-items: center; gap: 1rem; }
+        
+        .brand-dot { 
+            width: 16px; 
+            height: 16px; 
+            background: linear-gradient(135deg, #19D3DA, #7A3CF0); 
+            border-radius: 50%; 
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(122, 60, 240, 0.6);
+        }
+        
+        @keyframes pulse { 
+            0%, 100% { transform: scale(1); opacity: 1; } 
+            50% { transform: scale(1.3); opacity: 0.7; } 
+        }
+        
+        .brand-text { 
+            font-size: 1.6rem; 
+            font-weight: 900; 
+            color: #fff; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(122, 60, 240, 0.5);
+        }
+        
+        .seller-badge { 
+            background: var(--primary-gradient); 
+            color: white; 
+            padding: 0.4rem 1rem; 
+            border-radius: 25px; 
+            font-size: 0.85rem; 
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(122, 60, 240, 0.3);
+        }
+        
+        .notification-icon { 
+            position: relative; 
+            font-size: 1.4rem; 
+            cursor: pointer; 
+            margin-right: 2rem;
+            transition: transform 0.2s;
+        }
+        
+        .notification-icon:hover { transform: scale(1.1); }
+        
+        .notification-badge { 
+            position: absolute; 
+            top: -10px; 
+            right: -10px; 
+            background: var(--error); 
+            color: white; 
+            border-radius: 50%; 
+            width: 20px; 
+            height: 20px; 
+            font-size: 0.7rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: 700;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .btn-logout { 
+            background: linear-gradient(135deg, var(--error), #FF99D9); 
+            color: white; 
+            border: none; 
+            padding: 0.8rem 1.8rem; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+        
+        .btn-logout:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.5);
+        }
+        
+        .nav-actions { display: flex; align-items: center; }
+        
+        /* Dashboard Layout */
+        .dashboard-layout { 
+            display: flex; 
+            padding: 2.5rem 3rem; 
+            gap: 2.5rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-sidebar { 
+            width: 280px; 
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px; 
+            padding: 2rem; 
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+        
+        .sidebar-header { 
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .sidebar-header h3 { 
+            color: #fff; 
+            font-size: 1.3rem; 
+            font-weight: 800;
+        }
+        
+        .sidebar-menu { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.6rem; 
+        }
+        
+        .menu-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            padding: 1rem 1.2rem; 
+            color: var(--text-medium); 
+            text-decoration: none; 
+            border-radius: 12px; 
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+        
+        .menu-item:hover, .menu-item.active { 
+            background: rgba(122,60,240,0.2); 
+            color: #fff;
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .menu-icon { font-size: 1.3rem; }
+        .menu-text { font-size: 0.95rem; font-weight: 600; }
+        
+        /* Main Content */
+        .dashboard-main { flex: 1; }
+        
+        .dashboard-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 3rem;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .dashboard-header h1 { 
+            font-size: 2.5rem; 
+            background: linear-gradient(135deg, #7A3CF0 0%, #19D3DA 85%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        
+        .header-subtitle { 
+            color: var(--text-medium); 
+            margin-top: 0.8rem;
+            font-size: 1.05rem;
+        }
+        
+        .btn-primary { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border: none; 
+            padding: 1rem 2.2rem; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(122, 60, 240, 0.4);
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(122, 60, 240, 0.6);
+        }
+        
+        /* Stats Overview */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1.5rem; 
+            margin-bottom: 3rem; 
+        }
+        
+        .stat-card { 
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border); 
+            border-radius: 16px; 
+            padding: 1.5rem; 
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover { 
+            transform: translateY(-5px); 
+            border-color: rgba(122,60,240,0.6);
+            box-shadow: 0 12px 40px rgba(122, 60, 240, 0.3);
+        }
+        
+        .stat-value { 
+            font-size: 2.5rem; 
+            font-weight: 900; 
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label { 
+            color: var(--text-medium); 
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        /* Rooms Grid */
+        .rooms-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); 
+            gap: 2rem; 
+            margin-bottom: 3rem;
+        }
+        
+        .room-card { 
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border); 
+            border-radius: 20px; 
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(122, 60, 240, 0.3);
+        }
+        
+        .room-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .room-card.live { 
+            border-color: rgba(255, 77, 109, 0.6);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.3);
+        }
+        
+        .room-card.available { 
+            border-color: rgba(50, 230, 133, 0.6);
+            box-shadow: 0 0 30px rgba(50, 230, 133, 0.2);
+        }
+        
+        .room-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .room-name { 
+            color: #fff; 
+            font-weight: 900; 
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .room-icon {
+            font-size: 2rem;
+        }
+        
+        .room-status-badge { 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 25px; 
+            font-size: 0.9rem; 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .room-status-badge.live { 
+            background: rgba(255, 77, 109, 0.2); 
+            color: var(--error);
+            animation: pulse-live 2s infinite;
+        }
+        
+        @keyframes pulse-live {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 77, 109, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(255, 77, 109, 0.6); }
+        }
+        
+        .room-status-badge.available { 
+            background: rgba(50, 230, 133, 0.2); 
+            color: var(--success);
+        }
+        
+        .room-status-badge.offline { 
+            background: rgba(154, 161, 210, 0.2); 
+            color: var(--text-low);
+        }
+        
+        .room-details { margin: 1.5rem 0; }
+        
+        .room-detail-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 0.8rem 0;
+            color: var(--text-medium);
+        }
+        
+        .detail-label { 
+            font-size: 0.9rem;
+            color: var(--text-low);
+        }
+        
+        .detail-value { 
+            font-weight: 700;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .salesperson-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: rgba(20, 25, 44, 0.5);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .salesperson-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .salesperson-details {
+            flex: 1;
+        }
+        
+        .salesperson-name {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        
+        .salesperson-role {
+            color: var(--text-low);
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        
+        .room-actions { 
+            display: flex; 
+            gap: 1rem; 
+            margin-top: 1.5rem;
+        }
+        
+        .btn-action { 
+            flex: 1;
+            padding: 0.9rem; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 700;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .btn-view { 
+            background: var(--secondary-gradient); 
+            color: #000;
+            box-shadow: 0 4px 15px rgba(25, 211, 218, 0.3);
+        }
+        
+        .btn-view:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(25, 211, 218, 0.5);
+        }
+        
+        .btn-assign { 
+            background: var(--success-gradient); 
+            color: #000;
+            box-shadow: 0 4px 15px rgba(50, 230, 133, 0.3);
+        }
+        
+        .btn-assign:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(50, 230, 133, 0.5);
+        }
+        
+        .btn-end { 
+            background: linear-gradient(135deg, var(--error), #FF99D9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+        
+        .btn-end:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.5);
+        }
+        
+        /* Session Timer */
+        .session-timer {
+            background: rgba(20, 25, 44, 0.5);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .timer-label {
+            color: var(--text-low);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timer-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(26, 31, 42, 0.95);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-header h2 {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        
+        .btn-close {
+            background: rgba(255, 77, 109, 0.2);
+            color: var(--error);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-close:hover {
+            background: rgba(255, 77, 109, 0.4);
+            transform: rotate(90deg);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: var(--text-medium);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(20, 25, 44, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            background: rgba(30, 35, 64, 0.8);
+            color: var(--text-medium);
+            border: 1px solid var(--card-border);
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(30, 35, 64, 1);
+        }
+        
+        .btn-submit {
+            flex: 1;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(122, 60, 240, 0.5);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: #000;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 3000;
+            box-shadow: 0 8px 30px rgba(50, 230, 133, 0.5);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.error {
+            background: var(--error);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .dashboard-layout { padding: 2rem; }
+            .navbar { padding: 1.2rem 2rem; }
+        }
+        
+        @media (max-width: 1024px) {
+            .dashboard-layout { flex-direction: column; }
+            .dashboard-sidebar { width: 100%; position: static; }
+            .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+            .rooms-grid { grid-template-columns: 1fr; }
+            .dashboard-header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">BHARATBAZAAR</span>
+                <span class="seller-badge">Seller</span>
+            </div>
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">3</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="sellerdashboard.html" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Overview</span>
+                </a>
+                <a href="sellerproducts.html" class="menu-item">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Manage Products</span>
+                </a>
+                <a href="sellerlinks.html" class="menu-item">
+                    <span class="menu-icon">🔗</span>
+                    <span class="menu-text">Generated Links</span>
+                </a>
+                <a href="sellerqueue.html" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Queue Monitor</span>
+                </a>
+                <a href="sellerrooms.html" class="menu-item active">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Rooms Control</span>
+                </a>
+                <a href="selleranalytics.html" class="menu-item">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">Analytics</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <h1>🏠 Live Rooms Control</h1>
+                    <p class="header-subtitle">Manage live shopping rooms and assign salespeople</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="createNewRoom()">
+                        ✨ Create Room
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRooms">8</div>
+                    <div class="stat-label">Total Rooms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="liveRooms">3</div>
+                    <div class="stat-label">🔴 Live Now</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="availableRooms">4</div>
+                    <div class="stat-label">🟢 Available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="offlineRooms">1</div>
+                    <div class="stat-label">⚪ Offline</div>
+                </div>
+            </div>
+
+            <div class="rooms-grid" id="roomsGrid">
+                <!-- Room Card 1 - Live -->
+                <div class="room-card live">
+                    <div class="room-header">
+                        <div class="room-name">
+                            <span class="room-icon">🏠</span>
+                            Room 1
+                        </div>
+                        <span class="room-status-badge live">🔴 Live</span>
+                    </div>
+                    
+                    <div class="salesperson-info">
+                        <div class="salesperson-avatar">A</div>
+                        <div class="salesperson-details">
+                            <div class="salesperson-name">Amit Singh</div>
+                            <div class="salesperson-role">Senior Sales Executive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-details">
+                        <div class="room-detail-item">
+                            <span class="detail-label">Customer</span>
+                            <span class="detail-value">Priya Sharma</span>
+                        </div>
+                        <div class="room-detail-item">
+                            <span class="detail-label">Product</span>
+                            <span class="detail-value">iPhone 15 Pro</span>
+                        </div>
+                    </div>
+                    
+                    <div class="session-timer">
+                        <div class="timer-label">Session Duration</div>
+                        <div class="timer-value" id="timer1">15:42</div>
+                    </div>
+                    
+                    <div class="room-actions">
+                        <button class="btn-action btn-view" onclick="viewRoom('room1')">👁️ View</button>
+                        <button class="btn-action btn-end" onclick="endSession('room1')">⏹️ End</button>
+                    </div>
+                </div>
+
+                <!-- Room Card 2 - Available -->
+                <div class="room-card available">
+                    <div class="room-header">
+                        <div class="room-name">
+                            <span class="room-icon">🏠</span>
+                            Room 2
+                        </div>
+                        <span class="room-status-badge available">🟢 Available</span>
+                    </div>
+                    
+                    <div class="salesperson-info">
+                        <div class="salesperson-avatar">S</div>
+                        <div class="salesperson-details">
+                            <div class="salesperson-name">Sneha Patel</div>
+                            <div class="salesperson-role">Sales Executive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-details">
+                        <div class="room-detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">Ready for customers</span>
+                        </div>
+                        <div class="room-detail-item">
+                            <span class="detail-label">Last Active</span>
+                            <span class="detail-value">5 min ago</span>
+                        </div>
+                    </div>
+                    
+                    <div class="room-actions">
+                        <button class="btn-action btn-assign" onclick="openAssignModal('room2')">👤 Assign Customer</button>
+                    </div>
+                </div>
+
+                <!-- Room Card 3 - Live -->
+                <div class="room-card live">
+                    <div class="room-header">
+                        <div class="room-name">
+                            <span class="room-icon">🏠</span>
+                            Room 3
+                        </div>
+                        <span class="room-status-badge live">🔴 Live</span>
+                    </div>
+                    
+                    <div class="salesperson-info">
+                        <div class="salesperson-avatar">V</div>
+                        <div class="salesperson-details">
+                            <div class="salesperson-name">Vikram Roy</div>
+                            <div class="salesperson-role">Senior Sales Executive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-details">
+                        <div class="room-detail-item">
+                            <span class="detail-label">Customer</span>
+                            <span class="detail-value">Ajay Kumar</span>
+                        </div>
+                        <div class="room-detail-item">
+                            <span class="detail-label">Product</span>
+                            <span class="detail-value">MacBook Pro</span>
+                        </div>
+                    </div>
+                    
+                    <div class="session-timer">
+                        <div class="timer-label">Session Duration</div>
+                        <div class="timer-value" id="timer3">08:15</div>
+                    </div>
+                    
+                    <div class="room-actions">
+                        <button class="btn-action btn-view" onclick="viewRoom('room3')">👁️ View</button>
+                        <button class="btn-action btn-end" onclick="endSession('room3')">⏹️ End</button>
+                    </div>
+                </div>
+
+                <!-- Room Card 4 - Available -->
+                <div class="room-card available">
+                    <div class="room-header">
+                        <div class="room-name">
+                            <span class="room-icon">🏠</span>
+                            Room 4
+                        </div>
+                        <span class="room-status-badge available">🟢 Available</span>
+                    </div>
+                    
+                    <div class="salesperson-info">
+                        <div class="salesperson-avatar">R</div>
+                        <div class="salesperson-details">
+                            <div class="salesperson-name">Riya Verma</div>
+                            <div class="salesperson-role">Sales Executive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-details">
+                        <div class="room-detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">Ready for customers</span>
+                        </div>
+                        <div class="room-detail-item">
+                            <span class="detail-label">Last Active</span>
+                            <span class="detail-value">12 min ago</span>
+                        </div>
+                    </div>
+                    
+                    <div class="room-actions">
+                        <button class="btn-action btn-assign" onclick="openAssignModal('room4')">👤 Assign Customer</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Assign Customer Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assign Customer</h2>
+                <button class="btn-close" onclick="closeAssignModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="selectCustomer">Select Customer from Queue</label>
+                    <select id="selectCustomer">
+                        <option value="">Choose a customer</option>
+                        <option value="c1">Rahul Kumar - iPhone 15 Pro</option>
+                        <option value="c2">Anjali Gupta - MacBook Pro</option>
+                        <option value="c3">Vikram Mehta - AirPods Pro</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-cancel" onclick="closeAssignModal()">Cancel</button>
+                    <button class="btn-submit" onclick="assignCustomer()">Assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let currentRoomId = null;
+
+        function openAssignModal(roomId) {
+            currentRoomId = roomId;
+            document.getElementById('assignModal').style.display = 'flex';
+        }
+
+        function closeAssignModal() {
+            document.getElementById('assignModal').style.display = 'none';
+            currentRoomId = null;
+        }
+
+        function assignCustomer() {
+            const customer = document.getElementById('selectCustomer').value;
+            if (!customer) {
+                showToast('Please select a customer', 'error');
+                return;
+            }
+            showToast(`Customer assigned to ${currentRoomId} successfully! ✅`, 'success');
+            closeAssignModal();
+            // Reload rooms or update UI
+        }
+
+        function viewRoom(roomId) {
+            showToast(`Opening ${roomId} viewer...`, 'success');
+            window.location.href = `liveroom.html?room=${roomId}`;
+        }
+
+        function endSession(roomId) {
+            if (confirm(`End session in ${roomId}?`)) {
+                showToast(`Session ended in ${roomId}`, 'success');
+                // Update room status
+            }
+        }
+
+        function createNewRoom() {
+            showToast('Creating new room...', 'success');
+            // Room creation logic
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Update timers
+        setInterval(() => {
+            const timer1 = document.getElementById('timer1');
+            const timer3 = document.getElementById('timer3');
+            if (timer1) {
+                let [min, sec] = timer1.textContent.split(':').map(Number);
+                sec++;
+                if (sec === 60) { sec = 0; min++; }
+                timer1.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            }
+            if (timer3) {
+                let [min, sec] = timer3.textContent.split(':').map(Number);
+                sec++;
+                if (sec === 60) { sec = 0; min++; }
+                timer3.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            }
+        }, 1000);
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

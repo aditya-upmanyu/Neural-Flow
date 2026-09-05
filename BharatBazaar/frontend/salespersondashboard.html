@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesperson Dashboard - BHARATBAZAAR</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            color: #e8ecff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: rgba(15,20,25,0.95);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(122,60,240,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .brand-dot { width: 14px; height: 14px; background: linear-gradient(135deg, #19D3DA, #7A3CF0); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
+        .seller-badge { background: linear-gradient(135deg, #19D3DA, #4DE3EA); color: #000; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+        .notification-icon { position: relative; font-size: 1.3rem; cursor: pointer; margin-right: 1.5rem; }
+        .notification-badge { position: absolute; top: -8px; right: -8px; background: #FF4D6D; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+        .btn-logout { background: #FF4D6D; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-logout:hover { background: #FF66C4; transform: translateY(-2px); }
+        .nav-actions { display: flex; align-items: center; }
+        
+        /* Main Layout */
+        .salesperson-layout { padding: 2rem; }
+        .salesperson-container { max-width: 1200px; margin: 0 auto; }
+        .salesperson-header h1 { font-size: 2.5rem; background: linear-gradient(135deg, #19D3DA 0%, #7A3CF0 85%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        .header-subtitle { color: #c9ceef; font-size: 1.1rem; margin-bottom: 2rem; }
+        
+        /* Room Status */
+        .room-status-section { margin: 2rem 0; }
+        .room-status-card-large { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 20px; padding: 2rem; }
+        .room-header-large { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .room-header-large h2 { color: #fff; font-size: 1.5rem; }
+        .status-badge-large { padding: 0.6rem 1.2rem; border-radius: 25px; font-size: 1rem; font-weight: 700; }
+        .status-badge-large.live { background: rgba(255, 77, 109, 0.2); color: #FF4D6D; }
+        .status-badge-large.available { background: rgba(50, 230, 133, 0.2); color: #32E685; }
+        .room-info-large { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .info-item-large { display: flex; flex-direction: column; gap: 0.5rem; }
+        .info-label { color: #9aa1d2; font-size: 0.9rem; }
+        .info-value { color: #fff; font-size: 1.3rem; font-weight: 700; }
+        
+        /* Current Session */
+        .current-session { background: rgba(20, 25, 44, 0.5); border-radius: 15px; padding: 1.5rem; margin-top: 1.5rem; }
+        .current-session h3 { color: #fff; margin-bottom: 1rem; font-size: 1.2rem; }
+        .session-details { display: flex; justify-content: space-between; align-items: center; }
+        .session-customer { display: flex; align-items: center; gap: 1rem; }
+        .customer-avatar-large { width: 50px; height: 50px; background: linear-gradient(135deg, #7A3CF0, #FF66C4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; }
+        .customer-name-large { color: #fff; font-size: 1.2rem; font-weight: 700; }
+        .customer-product { color: #c9ceef; margin-top: 0.3rem; }
+        .session-timer { display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: #19D3DA; }
+        
+        /* Queue Section */
+        .queue-section-salesperson { margin: 3rem 0; }
+        .section-title { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; }
+        .queue-list-salesperson { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; }
+        .empty-state { text-align: center; padding: 3rem; color: #9aa1d2; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+        .empty-subtitle { font-size: 0.9rem; color: #7a7f9f; margin-top: 0.5rem; }
+        .queue-item-salesperson { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(20, 25, 44, 0.5); border-radius: 10px; margin-bottom: 1rem; }
+        .queue-item-salesperson:last-child { margin-bottom: 0; }
+        .queue-number { background: linear-gradient(135deg, #19D3DA, #7A3CF0); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .queue-info { flex: 1; }
+        .queue-name { color: #fff; font-weight: 700; font-size: 1.1rem; }
+        .queue-product { color: #c9ceef; margin-top: 0.3rem; }
+        .queue-phone { color: #19D3DA; font-weight: 600; }
+        
+        /* Action Buttons */
+        .action-buttons-section { display: flex; gap: 1rem; margin: 2rem 0; }
+        .btn-start-session, .btn-view-products { flex: 1; padding: 1.2rem 2rem; border-radius: 12px; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-start-session { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; }
+        .btn-start-session:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(50, 230, 133, 0.4); }
+        .btn-view-products { background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; }
+        .btn-view-products:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(122, 60, 240, 0.4); }
+        
+        /* Performance Stats */
+        .performance-section-salesperson { margin: 3rem 0; }
+        .performance-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .perf-stat-card { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; text-align: center; transition: 0.2s; }
+        .perf-stat-card:hover { transform: translateY(-5px); border-color: rgba(122,60,240,0.5); }
+        .perf-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .perf-value { font-size: 2rem; font-weight: 700; color: #19D3DA; margin-bottom: 0.5rem; }
+        .perf-label { color: #c9ceef; font-size: 0.9rem; }
+        
+        /* Recent Sessions */
+        .history-section-salesperson { margin: 3rem 0; }
+        .history-list-salesperson { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; }
+        .history-item-salesperson { display: flex; align-items: center; gap: 1.5rem; padding: 1rem; background: rgba(20, 25, 44, 0.5); border-radius: 10px; margin-bottom: 1rem; }
+        .history-item-salesperson:last-child { margin-bottom: 0; }
+        .history-time { color: #9aa1d2; font-size: 0.9rem; width: 80px; }
+        .history-content { flex: 1; }
+        .history-customer { color: #fff; font-weight: 700; margin-bottom: 0.3rem; }
+        .history-product { color: #c9ceef; }
+        .history-result.success { color: #32E685; }
+        .history-result.pending { color: #FFB547; }
+        .history-amount { color: #32E685; font-weight: 700; font-size: 1.1rem; }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: #32E685; color: #000; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 1000; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.info { background: #19D3DA; }
+        .toast.error { background: #FF4D6D; color: white; }
+        
+        @media (max-width: 768px) {
+            .action-buttons-section { flex-direction: column; }
+            .room-info-large { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">BHARATBAZAAR</span>
+                <span class="seller-badge">Salesperson</span>
+            </div>
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">2</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="salesperson-layout">
+        <div class="salesperson-container">
+            <div class="salesperson-header">
+                <h1>Welcome, <span id="salespersonName">Salesperson</span>! 👋</h1>
+                <p class="header-subtitle">Your assigned room and upcoming customers</p>
+            </div>
+
+            <div class="room-status-section">
+                <div class="room-status-card-large">
+                    <div class="room-header-large">
+                        <h2>Your Assigned Room</h2>
+                        <span class="status-badge-large available" id="roomStatusBadge">🟢 Available</span>
+                    </div>
+                    
+                    <div class="room-info-large">
+                        <div class="info-item-large">
+                            <span class="info-label">🏠 Room Number</span>
+                            <span class="info-value" id="roomNumber">Room 2</span>
+                        </div>
+                        <div class="info-item-large">
+                            <span class="info-label">📊 Status</span>
+                            <span class="info-value" id="roomStatus">Ready for customers</span>
+                        </div>
+                    </div>
+                    
+                    <div class="current-session" id="currentSession" style="display: none;">
+                        <h3>Current Session</h3>
+                        <div class="session-details">
+                            <div class="session-customer">
+                                <span class="customer-avatar-large" id="customerAvatar">R</span>
+                                <div>
+                                    <div class="customer-name-large" id="customerName">Rahul Kumar</div>
+                                    <div class="customer-product">Interested in: <strong id="customerProduct">iPhone 15 Pro</strong></div>
+                                </div>
+                            </div>
+                            <div class="session-timer">
+                                <span>⏱️</span>
+                                <span id="sessionTimer">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queue-section-salesperson">
+                <h2 class="section-title">Upcoming Customers (<span id="queueCount">3</span>)</h2>
+                <div class="queue-list-salesperson" id="queueList">
+                    <div class="queue-item-salesperson">
+                        <div class="queue-number">#1</div>
+                        <div class="queue-info">
+                            <div class="queue-name">Rahul Kumar</div>
+                            <div class="queue-product">📦 iPhone 15 Pro</div>
+                        </div>
+                        <div class="queue-phone">📞 +91 98765 43210</div>
+                    </div>
+                    <div class="queue-item-salesperson">
+                        <div class="queue-number">#2</div>
+                        <div class="queue-info">
+                            <div class="queue-name">Anjali Gupta</div>
+                            <div class="queue-product">📦 MacBook Pro</div>
+                        </div>
+                        <div class="queue-phone">📞 +91 98765 43211</div>
+                    </div>
+                    <div class="queue-item-salesperson">
+                        <div class="queue-number">#3</div>
+                        <div class="queue-info">
+                            <div class="queue-name">Vikram Mehta</div>
+                            <div class="queue-product">📦 AirPods Pro</div>
+                        </div>
+                        <div class="queue-phone">📞 +91 98765 43212</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons-section">
+                <button class="btn-start-session" id="startSessionBtn" onclick="startNextSession()">
+                    ▶️ Start Next Session
+                </button>
+                <button class="btn-view-products" onclick="viewProducts()">
+                    📦 View Products
+                </button>
+            </div>
+
+            <div class="performance-section-salesperson">
+                <h2 class="section-title">Today's Performance</h2>
+                <div class="performance-stats-grid">
+                    <div class="perf-stat-card">
+                        <div class="perf-icon">👥</div>
+                        <div class="perf-value">8</div>
+                        <div class="perf-label">Sessions</div>
+                    </div>
+                    <div class="perf-stat-card">
+                        <div class="perf-icon">💰</div>
+                        <div class="perf-value">₹45,000</div>
+                        <div class="perf-label">Revenue</div>
+                    </div>
+                    <div class="perf-stat-card">
+                        <div class="perf-icon">📈</div>
+                        <div class="perf-value">75%</div>
+                        <div class="perf-label">Conversion</div>
+                    </div>
+                    <div class="perf-stat-card">
+                        <div class="perf-icon">⭐</div>
+                        <div class="perf-value">4.8</div>
+                        <div class="perf-label">Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section-salesperson">
+                <h2 class="section-title">Recent Sessions</h2>
+                <div class="history-list-salesperson">
+                    <div class="history-item-salesperson">
+                        <div class="history-time">2:15 PM</div>
+                        <div class="history-content">
+                            <div class="history-customer">Priya Sharma</div>
+                            <div class="history-product">MacBook Pro - <span class="history-result success">✓ Purchased</span></div>
+                        </div>
+                        <div class="history-amount">₹1,99,999</div>
+                    </div>
+                    <div class="history-item-salesperson">
+                        <div class="history-time">1:45 PM</div>
+                        <div class="history-content">
+                            <div class="history-customer">Ajay Verma</div>
+                            <div class="history-product">AirPods Pro - <span class="history-result success">✓ Purchased</span></div>
+                        </div>
+                        <div class="history-amount">₹24,999</div>
+                    </div>
+                    <div class="history-item-salesperson">
+                        <div class="history-time">1:20 PM</div>
+                        <div class="history-content">
+                            <div class="history-customer">Neha Singh</div>
+                            <div class="history-product">Apple Watch - <span class="history-result pending">⏳ Undecided</span></div>
+                        </div>
+                        <div class="history-amount">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const userName = localStorage.getItem('userName') || 'Salesperson';
+            document.getElementById('salespersonName').textContent = userName;
+        });
+
+        function startNextSession() {
+            showToast('Starting session with Rahul Kumar...', 'info');
+            setTimeout(() => {
+                window.location.href = 'liveroom.html';
+            }, 1500);
+        }
+
+        function viewProducts() {
+            window.location.href = 'sellerproducts.html';
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

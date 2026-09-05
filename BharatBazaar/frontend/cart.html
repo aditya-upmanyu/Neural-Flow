@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart — BharatBazaar</title>
+    <link rel="stylesheet" href="chatbot.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9f9fc; color: #1a1a2e; min-height: 100vh; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); padding: 1rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid #ededf5; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: #1a1a2e; text-decoration: none; flex-shrink: 0; }
+        .brand-dot { width: 11px; height: 11px; background: linear-gradient(135deg,#ff6b35,#f7931e); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+        .nav-links { display: flex; gap: 0.2rem; list-style: none; margin-left: auto; }
+        .nav-links a { color: #4a4a6a; text-decoration: none; padding: 0.45rem 0.9rem; border-radius: 7px; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,107,53,.1); color: #ff6b35; }
+        .btn-continue { background: transparent; border: 1.5px solid #e0e0ee; color: #4a4a6a; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .btn-continue:hover { border-color: #ff6b35; color: #ff6b35; }
+
+        /* PAGE */
+        .page-wrap { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
+        .page-title { font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 2rem; }
+
+        /* LAYOUT */
+        .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; align-items: start; }
+
+        /* CART ITEMS */
+        .cart-box { background: #fff; border: 1px solid #ededf5; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .cart-box-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #ededf5; display: flex; justify-content: space-between; align-items: center; }
+        .cart-box-header h3 { font-size: 1rem; font-weight: 700; color: #1a1a2e; }
+        .btn-clear { background: transparent; border: none; color: #e8304a; font-size: 0.82rem; font-weight: 600; cursor: pointer; padding: 0.3rem 0.7rem; border-radius: 6px; transition: all 0.2s; }
+        .btn-clear:hover { background: #fff0f0; }
+
+        /* CART ITEM ROW */
+        .cart-item { display: flex; gap: 1.25rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid #f5f5fb; align-items: flex-start; transition: background 0.15s; }
+        .cart-item:hover { background: #fafafa; }
+        .cart-item:last-child { border-bottom: none; }
+        .item-img { width: 88px; height: 88px; object-fit: cover; border-radius: 12px; background: #f5f5fb; flex-shrink: 0; cursor: pointer; }
+        .item-info { flex: 1; min-width: 0; }
+        .item-cat { font-size: 0.7rem; font-weight: 700; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+        .item-name { font-size: 0.98rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.3rem; cursor: pointer; line-height: 1.3; }
+        .item-name:hover { color: #ff6b35; }
+        .item-unit-price { font-size: 0.85rem; color: #8888aa; }
+        .item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; flex-shrink: 0; }
+        .item-total { font-size: 1.15rem; font-weight: 800; color: #ff6b35; }
+        .qty-ctrl { display: flex; align-items: center; background: #f5f5fb; border: 1.5px solid #e0e0ee; border-radius: 9px; overflow: hidden; }
+        .qty-btn { width: 32px; height: 32px; background: transparent; border: none; font-size: 1rem; cursor: pointer; color: #4a4a6a; transition: all 0.2s; }
+        .qty-btn:hover { background: #ff6b35; color: #fff; }
+        .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .qty-num { width: 36px; text-align: center; font-size: 0.95rem; font-weight: 700; color: #1a1a2e; }
+        .btn-remove { background: transparent; border: none; color: #ccc; font-size: 1.2rem; cursor: pointer; padding: 0.2rem; transition: color 0.2s; line-height: 1; }
+        .btn-remove:hover { color: #e8304a; }
+
+        /* EMPTY / LOADING */
+        .state-box { padding: 4rem 2rem; text-align: center; }
+        .state-icon { font-size: 4rem; opacity: 0.35; margin-bottom: 1rem; }
+        .state-box h3 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .state-box p { color: #9999bb; margin-bottom: 1.5rem; font-size: 0.92rem; }
+        .btn-shop { background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; padding: 0.85rem 2rem; border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; text-decoration: none; display: inline-block; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #f0e8ff; border-top-color: #ff6b35; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ORDER SUMMARY */
+        .summary-box { background: #fff; border: 1px solid #ededf5; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 90px; }
+        .summary-box h3 { font-size: 1rem; font-weight: 800; color: #1a1a2e; margin-bottom: 1.5rem; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.85rem; color: #5a5a7a; }
+        .summary-row.total { font-size: 1.15rem; font-weight: 800; color: #1a1a2e; padding-top: 1rem; border-top: 2px solid #f0f0f8; margin-top: 0.5rem; }
+        .text-green { color: #18a349; font-weight: 600; }
+        .btn-checkout { width: 100%; background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; border: none; padding: 1.1rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 1.25rem; box-shadow: 0 4px 14px rgba(255,107,53,.3); }
+        .btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,.4); }
+        .btn-checkout:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .trust-row { display: flex; gap: 0.5rem; margin-top: 1.25rem; }
+        .trust-item { flex: 1; text-align: center; background: #fafafa; border-radius: 10px; padding: 0.75rem 0.5rem; }
+        .trust-item .ti { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+        .trust-item span:last-child { font-size: 0.72rem; color: #8888aa; font-weight: 600; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.9rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; color: #fff; background: #1a1a2e; max-width: 300px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #18a349; }
+        .toast.error { background: #e8304a; }
+
+        @media (max-width: 880px) { .cart-layout { grid-template-columns: 1fr; } .summary-box { position: static; } .nav-links { display: none; } }
+        @media (max-width: 580px) { .navbar { padding: 0.85rem 1.25rem; } .page-wrap { padding: 1.5rem 1rem 4rem; } .cart-item { flex-wrap: wrap; } .item-right { flex-direction: row; flex-wrap: wrap; width: 100%; justify-content: space-between; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="brand"><div class="brand-dot"></div>BharatBazaar</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="customerhome.html">Products</a></li>
+        <li><a href="cart.html" class="active">Cart</a></li>
+    </ul>
+    <div style="margin-left:auto;">
+        <a href="customerhome.html" class="btn-continue">← Continue Shopping</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <h1 class="page-title">🛒 Shopping Cart</h1>
+    <div class="cart-layout">
+        <div>
+            <div class="cart-box" id="cartBox">
+                <div class="state-box"><div class="spinner"></div><p style="color:#9999bb">Loading your cart…</p></div>
+            </div>
+        </div>
+        <div>
+            <div class="summary-box">
+                <h3>Order Summary</h3>
+                <div class="summary-row"><span>Subtotal (<span id="itemCount">0</span> items)</span><span id="subtotal">₹0</span></div>
+                <div class="summary-row"><span>Shipping</span><span class="text-green">FREE</span></div>
+                <div class="summary-row"><span>Tax (18% GST)</span><span id="taxAmt">₹0</span></div>
+                <div class="summary-row total"><span>Total</span><span id="totalAmt">₹0</span></div>
+                <button class="btn-checkout" id="checkoutBtn" onclick="window.location.href='checkout.html'" disabled>
+                    Proceed to Checkout →
+                </button>
+                <div class="trust-row">
+                    <div class="trust-item"><span class="ti">🔒</span><span>Secure</span></div>
+                    <div class="trust-item"><span class="ti">🚚</span><span>Free Ship</span></div>
+                    <div class="trust-item"><span class="ti">↩️</span><span>Returns</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="chatbot.js"></script>
+<script>
+// ── Guest session ─────────────────────────────────────────────────────────────
+function getGuestId() {
+    let id = localStorage.getItem('guestSessionId');
+    if (!id) { id = 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2,9); localStorage.setItem('guestSessionId', id); }
+    return id;
+}
+function apiHeaders(json = true) {
+    const token = localStorage.getItem('authToken');
+    const h = {};
+    if (json) h['Content-Type'] = 'application/json';
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    else h['X-Guest-Session'] = getGuestId();
+    return h;
+}
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Load cart ─────────────────────────────────────────────────────────────────
+async function loadCart() {
+    try {
+        const res = await fetch('/api/cart', { headers: apiHeaders(false) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed to load cart');
+        renderCart(d.cart?.items || []);
+    } catch (err) {
+        document.getElementById('cartBox').innerHTML = `
+            <div class="state-box">
+                <div class="state-icon">⚠️</div>
+                <h3>Couldn't load cart</h3>
+                <p>${err.message}</p>
+                <button class="btn-shop" onclick="loadCart()">Try Again</button>
+            </div>`;
+    }
+}
+
+// ── Render cart ───────────────────────────────────────────────────────────────
+function renderCart(items) {
+    const box = document.getElementById('cartBox');
+
+    if (!items.length) {
+        box.innerHTML = `
+            <div class="state-box">
+                <div class="state-icon">🛒</div>
+                <h3>Your cart is empty</h3>
+                <p>Find something you love and add it to your cart.</p>
+                <a href="customerhome.html" class="btn-shop">Browse Products</a>
+            </div>`;
+        updateSummary([]);
+        document.getElementById('checkoutBtn').disabled = true;
+        return;
+    }
+
+    let html = `
+        <div class="cart-box-header">
+            <h3>${items.reduce((s,i) => s+i.quantity, 0)} item${items.reduce((s,i)=>s+i.quantity,0)!==1?'s':''} in cart</h3>
+            <button class="btn-clear" onclick="clearCart()">Clear All</button>
+        </div>`;
+
+    items.forEach(item => {
+        const p = item.productId;
+        const img = (p.images && p.images[0]) || 'https://placehold.co/88x88?text=No+Image';
+        const total = (p.price || 0) * item.quantity;
+        html += `
+            <div class="cart-item" id="row-${p._id}">
+                <img src="${img}" class="item-img" alt="${p.name}"
+                     onclick="window.location.href='productdetail.html?id=${p._id}'"
+                     onerror="this.src='https://placehold.co/88x88?text=No+Image'">
+                <div class="item-info">
+                    <div class="item-cat">${p.category || ''}</div>
+                    <div class="item-name" onclick="window.location.href='productdetail.html?id=${p._id}'">${p.name}</div>
+                    <div class="item-unit-price">₹${(p.price||0).toLocaleString('en-IN')} each</div>
+                </div>
+                <div class="item-right">
+                    <div class="item-total">₹${total.toLocaleString('en-IN')}</div>
+                    <div class="qty-ctrl">
+                        <button class="qty-btn" onclick="updateQty('${p._id}', ${item.quantity - 1})" ${item.quantity<=1?'disabled':''}>−</button>
+                        <span class="qty-num">${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateQty('${p._id}', ${item.quantity + 1})">+</button>
+                    </div>
+                    <button class="btn-remove" onclick="removeItem('${p._id}')" title="Remove">✕</button>
+                </div>
+            </div>`;
+    });
+
+    box.innerHTML = html;
+    updateSummary(items);
+    document.getElementById('checkoutBtn').disabled = false;
+}
+
+// ── Summary ───────────────────────────────────────────────────────────────────
+function updateSummary(items) {
+    let subtotal = 0, count = 0;
+    items.forEach(i => { subtotal += (i.productId?.price || 0) * i.quantity; count += i.quantity; });
+    const tax = Math.round(subtotal * 0.18);
+    document.getElementById('itemCount').textContent = count;
+    document.getElementById('subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+    document.getElementById('taxAmt').textContent = '₹' + tax.toLocaleString('en-IN');
+    document.getElementById('totalAmt').textContent = '₹' + (subtotal + tax).toLocaleString('en-IN');
+}
+
+// ── Update quantity ───────────────────────────────────────────────────────────
+async function updateQty(productId, newQty) {
+    if (newQty < 1) { removeItem(productId); return; }
+    try {
+        const res = await fetch('/api/cart/update/' + productId, {
+            method: 'PUT', headers: apiHeaders(),
+            body: JSON.stringify({ quantity: newQty })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        renderCart(d.cart?.items || []);
+    } catch (err) { showToast(err.message, 'error'); }
+}
+
+// ── Remove item ───────────────────────────────────────────────────────────────
+async function removeItem(productId) {
+    try {
+        const res = await fetch('/api/cart/remove/' + productId, { method: 'DELETE', headers: apiHeaders(false) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        renderCart(d.cart?.items || []);
+        showToast('Item removed', 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+}
+
+// ── Clear cart ────────────────────────────────────────────────────────────────
+async function clearCart() {
+    if (!confirm('Remove all items from your cart?')) return;
+    try {
+        const res = await fetch('/api/cart/clear', { method: 'DELETE', headers: apiHeaders(false) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        renderCart([]);
+        showToast('Cart cleared');
+    } catch (err) { showToast(err.message, 'error'); }
+}
+
+window.addEventListener('DOMContentLoaded', loadCart);
+</script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

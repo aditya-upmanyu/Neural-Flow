@@ -1,0 +1,19 @@
+[2026-09-05T15:06:56.856Z] ℹ️  INFO  NeuralFlow single-instance lock acquired (PID 25424) → C:\Users\adity\OneDrive\Desktop\NFV5\NeuralFlow\backend.pid
+[2026-09-05T15:09:27.477Z] ℹ️  INFO  [DIAG AI] Incident DETECTED on node 1 (Testfire Bank): latency=172ms, rps=30, slope=14.9 [env=INTERNAL, mode=AI]
+[2026-09-05T15:09:27.585Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED on node 1 (Testfire Bank): breachNote=~9s, predictedBreach=9
+[2026-09-05T15:09:27.695Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED -> REROUTING. Candidate nodes: [Zero Bank (96% health, 85ms), VulnWeb PHP (98% health, 109ms)]
+[2026-09-05T15:09:28.508Z] ℹ️  INFO  [DIAG AI] Calling executeAIReroute for node 1 (Testfire Bank)
+[2026-09-05T15:09:28.512Z] ℹ️  INFO  [DIAG AI] executeAIReroute CALLED: fromNode=1 (Testfire Bank), lastRerouteTime=0, elapsed=1788620968512ms, cooldown=15000ms, loadGeneratorActive=true
+[2026-09-05T15:09:28.514Z] ℹ️  INFO  [DIAG AI] Candidates evaluated: count=2, list=[2:Zero Bank(health=100), 3:VulnWeb PHP(health=100)]
+[2026-09-05T15:09:28.520Z] ℹ️  INFO  [DIAG AI] Traffic weights shifted. Before: [{"nodeId":1,"traffic":60},{"nodeId":2,"traffic":25},{"nodeId":3,"traffic":15}] | After: [{"nodeId":1,"traffic":20},{"nodeId":2,"traffic":65},{"nodeId":3,"traffic":15}]
+[2026-09-05T15:15:39.682Z] ℹ️  INFO  [DIAG AI] Incident DETECTED on node 1 (BB-NODE-1): latency=146ms, rps=41, slope=19.0 [env=EXTERNAL, mode=MANUAL]
+[2026-09-05T15:15:39.789Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED on node 1 (BB-NODE-1): breachNote=~8s, predictedBreach=8
+[2026-09-05T15:15:50.523Z] ℹ️  INFO  [DIAG AI] Incident DETECTED on node 1 (BB-NODE-1): latency=380ms, rps=29.4, slope=0.0 [env=EXTERNAL, mode=MANUAL]
+[2026-09-05T15:15:50.632Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED on node 1 (BB-NODE-1): breachNote=~nulls, predictedBreach=0
+[2026-09-05T15:16:06.948Z] ℹ️  INFO  [DIAG AI] Incident DETECTED on node 1 (BB-NODE-1): latency=179ms, rps=45, slope=17.7 [env=EXTERNAL, mode=AI]
+[2026-09-05T15:16:07.056Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED on node 1 (BB-NODE-1): breachNote=~7s, predictedBreach=7
+[2026-09-05T15:16:07.169Z] ℹ️  INFO  [DIAG AI] Incident PREDICTED -> REROUTING. Candidate nodes: [BB-NODE-2 (100% health, 3ms), BB-NODE-3 (100% health, 3ms)]
+[2026-09-05T15:16:07.987Z] ℹ️  INFO  [DIAG AI] Calling executeAIReroute for node 1 (BB-NODE-1)
+[2026-09-05T15:16:07.992Z] ℹ️  INFO  [DIAG AI] executeAIReroute CALLED: fromNode=1 (BB-NODE-1), lastRerouteTime=0, elapsed=1788621367992ms, cooldown=15000ms, loadGeneratorActive=true
+[2026-09-05T15:16:07.996Z] ℹ️  INFO  [DIAG AI] Candidates evaluated: count=2, list=[2:BB-NODE-2(health=100), 3:BB-NODE-3(health=100)]
+[2026-09-05T15:16:08.013Z] ℹ️  INFO  [DIAG AI] Traffic weights shifted. Before: [{"nodeId":1,"traffic":60},{"nodeId":2,"traffic":25},{"nodeId":3,"traffic":15}] | After: [{"nodeId":1,"traffic":20},{"nodeId":2,"traffic":25},{"nodeId":3,"traffic":55}]

@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BharatBazaar — Live Shopping Platform</title>
+    <link rel="stylesheet" href="chatbot.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff; color: #1a1a2e; overflow-x: hidden; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); padding: 1rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid #ededf5; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 800; color: #1a1a2e; text-decoration: none; flex-shrink: 0; }
+        .brand-dot { width: 11px; height: 11px; background: linear-gradient(135deg, #ff6b35, #f7931e); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+        .nav-links { display: flex; gap: 0.25rem; list-style: none; margin-left: auto; }
+        .nav-links a { color: #4a4a6a; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.92rem; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,107,53,.1); color: #ff6b35; }
+        .nav-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+        .btn-cart-nav { position: relative; background: #fff8f5; border: 1.5px solid #ff6b35; color: #ff6b35; padding: 0.5rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cart-nav:hover { background: #ff6b35; color: #fff; }
+        .cart-badge { position: absolute; top: -7px; right: -7px; background: #ff6b35; color: #fff; font-size: 0.68rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+        .btn-login-nav { background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; border: none; padding: 0.5rem 1.3rem; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(255,107,53,.25); }
+        .btn-login-nav:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(255,107,53,.35); }
+
+        /* HERO */
+        .hero { text-align: center; padding: 6rem 2rem 5rem; background: linear-gradient(180deg, #fff8f0 0%, #fff 100%); }
+        .hero-pill { display: inline-block; background: rgba(255,107,53,.1); color: #ff6b35; font-size: 0.82rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1.5rem; letter-spacing: 0.5px; }
+        .hero h1 { font-size: 3.8rem; font-weight: 900; line-height: 1.1; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 60%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1.25rem; }
+        .hero p { font-size: 1.15rem; color: #5a5a7a; margin: 0 auto 2.5rem; max-width: 540px; line-height: 1.65; }
+        .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-primary { background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; padding: 0.9rem 2.2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(255,107,53,.3); text-decoration: none; display: inline-block; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,.4); }
+        .btn-outline { background: transparent; border: 2px solid #ff6b35; color: #ff6b35; padding: 0.9rem 2.2rem; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-outline:hover { background: rgba(255,107,53,.08); transform: translateY(-2px); }
+        .hero-stats { display: flex; gap: 3rem; justify-content: center; margin-top: 3.5rem; flex-wrap: wrap; }
+        .stat-num { font-size: 2rem; font-weight: 800; color: #ff6b35; }
+        .stat-lbl { font-size: 0.82rem; color: #999abb; margin-top: 0.2rem; }
+
+        /* FEATURES */
+        .section { padding: 5rem 2rem; }
+        .section.alt { background: #fafafa; }
+        .section-hd { text-align: center; margin-bottom: 3rem; }
+        .section-hd h2 { font-size: 2.1rem; font-weight: 800; color: #1a1a2e; margin-bottom: 0.6rem; }
+        .section-hd p { color: #7a7a9a; font-size: 1rem; }
+        .inner { max-width: 1300px; margin: 0 auto; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.5rem; }
+        .feature-card { background: #fff; border: 1px solid #ededf5; border-radius: 16px; padding: 2rem; transition: all 0.2s; }
+        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(255,107,53,.15); border-color: #ff6b35; }
+        .f-icon { font-size: 2.4rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .feature-card p { color: #6a6a8a; line-height: 1.6; font-size: 0.92rem; }
+
+        /* STEPS */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.5rem; }
+        .step-card { text-align: center; padding: 2rem 1.5rem; background: #fff8f5; border-radius: 16px; border: 1px solid #f0e8e0; }
+        .step-num { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg,#ff6b35,#f7931e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.75rem; }
+        .step-card h3 { font-size: 1.05rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .step-card p { color: #7a7a9a; font-size: 0.88rem; line-height: 1.55; }
+
+        /* PRODUCTS */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 1.75rem; margin-top: 2.5rem; }
+        .product-card { background: #fff; border: 1px solid #ededf5; border-radius: 16px; overflow: hidden; transition: all 0.2s; cursor: pointer; position: relative; }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(255,107,53,.18); border-color: #ff6b35; }
+        .disc-badge { position: absolute; top: 12px; left: 12px; background: #ff6b35; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 9px; border-radius: 20px; z-index: 1; }
+        .p-img-wrap { overflow: hidden; height: 210px; }
+        .p-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; background: #f5f5fb; }
+        .product-card:hover .p-img { transform: scale(1.05); }
+        .p-body { padding: 1.2rem; }
+        .p-cat { font-size: 0.72rem; font-weight: 700; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.35rem; }
+        .p-name { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.35rem; line-height: 1.3; }
+        .p-desc { color: #888aaa; font-size: 0.85rem; margin-bottom: 0.85rem; line-height: 1.4; }
+        .p-pricing { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.6rem; }
+        .p-price { font-size: 1.25rem; font-weight: 800; color: #ff6b35; }
+        .p-orig { font-size: 0.85rem; color: #bbb; text-decoration: line-through; }
+        .p-rating { font-size: 0.8rem; color: #888aaa; margin-bottom: 1rem; }
+        .p-actions { display: flex; gap: 0.6rem; }
+        .btn-view { flex: 1; background: #fff8f5; border: 1.5px solid #ff6b35; color: #ff6b35; padding: 0.62rem; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .btn-view:hover { background: #ff6b35; color: #fff; }
+        .btn-add { flex: 1; background: linear-gradient(135deg,#ff6b35,#f7931e); border: none; color: #fff; padding: 0.62rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .btn-add:hover { box-shadow: 0 4px 14px rgba(255,107,53,.4); }
+        .btn-add:disabled { opacity: 0.6; cursor: not-allowed; }
+        .view-all-wrap { text-align: center; margin-top: 3rem; }
+        .btn-view-all { background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; padding: 1rem 3rem; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(255,107,53,.3); }
+        .btn-view-all:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,.4); }
+
+        /* FOOTER */
+        .footer { background: #1a1a2e; padding: 3.5rem 2.5rem 1.5rem; margin-top: 4rem; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2.5rem; max-width: 1200px; margin: 0 auto 2.5rem; }
+        .f-brand { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; }
+        .f-desc { color: #9999bb; line-height: 1.65; font-size: 0.88rem; }
+        .footer-col h4 { color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
+        .footer-col a { display: block; color: #9999bb; text-decoration: none; margin-bottom: 0.6rem; font-size: 0.88rem; transition: color 0.2s; }
+        .footer-col a:hover { color: #ff6b35; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,.08); padding-top: 1.5rem; text-align: center; color: #6666aa; font-size: 0.82rem; max-width: 1200px; margin: 0 auto; }
+
+        /* LOADING */
+        .loading-msg { grid-column: 1/-1; text-align: center; padding: 4rem 0; color: #999abb; }
+        .spinner { width: 38px; height: 38px; border: 3px solid #f0e8ff; border-top-color: #ff6b35; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.9rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.92rem; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; color: #fff; background: #1a1a2e; max-width: 300px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #18a349; }
+        .toast.error { background: #e8304a; }
+
+        @media (max-width: 900px) { .nav-links { display: none; } .hero h1 { font-size: 2.8rem; } .footer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .hero { padding: 4rem 1.25rem 3rem; } .hero h1 { font-size: 2.1rem; } .hero-stats { gap: 1.5rem; } .footer-grid { grid-template-columns: 1fr; } .navbar { padding: 0.9rem 1.25rem; } .hero-btns { flex-direction: column; align-items: center; } .section { padding: 3rem 1.25rem; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="brand"><div class="brand-dot"></div>BharatBazaar</a>
+    <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="customerhome.html">Products</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+    </ul>
+    <div class="nav-actions">
+        <button class="btn-cart-nav" onclick="window.location.href='cart.html'">
+            🛒 Cart<span class="cart-badge" id="navCartBadge"></span>
+        </button>
+        <button class="btn-login-nav" onclick="window.location.href='login.html'">Login</button>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-pill">🇮🇳 India's Live Shopping Platform</div>
+    <h1>Shop Live.<br>Buy Smart.</h1>
+    <p>Browse real products, connect with sellers live, and checkout without any account or signup.</p>
+    <div class="hero-btns">
+        <a href="customerhome.html" class="btn-primary">🛍️ Shop Now</a>
+        <a href="#products" class="btn-outline">View Featured</a>
+    </div>
+    <div class="hero-stats">
+        <div><div class="stat-num">500+</div><div class="stat-lbl">Products</div></div>
+        <div><div class="stat-num">50+</div><div class="stat-lbl">Verified Sellers</div></div>
+        <div><div class="stat-num">10K+</div><div class="stat-lbl">Happy Customers</div></div>
+    </div>
+</section>
+
+<section class="section alt" id="features">
+    <div class="inner">
+        <div class="section-hd">
+            <h2>Why BharatBazaar?</h2>
+            <p>A marketplace built for real shopping — no friction, no forced signups</p>
+        </div>
+        <div class="grid-3">
+            <div class="feature-card"><div class="f-icon">🎥</div><h3>Live Video Demo</h3><p>Connect with sellers via live video to see any product in real-time before making a purchase decision.</p></div>
+            <div class="feature-card"><div class="f-icon">🛒</div><h3>No Signup Needed</h3><p>Add to cart, checkout, and place real orders as a guest. No account, no password, zero friction.</p></div>
+            <div class="feature-card"><div class="f-icon">✅</div><h3>Verified Sellers</h3><p>Every seller is verified with ratings, reviews, and live response history. Buy with confidence.</p></div>
+            <div class="feature-card"><div class="f-icon">🚚</div><h3>Free Shipping</h3><p>Free shipping on all orders across India. Your order is tracked from warehouse to doorstep.</p></div>
+            <div class="feature-card"><div class="f-icon">🔒</div><h3>Secure Payments</h3><p>Pay via UPI, Card, Net Banking, or Cash on Delivery. All transactions are encrypted.</p></div>
+            <div class="feature-card"><div class="f-icon">↩️</div><h3>Easy Returns</h3><p>Not satisfied? Return within 7 days, no questions asked. Your satisfaction is guaranteed.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="how-it-works">
+    <div class="inner">
+        <div class="section-hd">
+            <h2>How It Works</h2>
+            <p>From browsing to delivery in 4 simple steps</p>
+        </div>
+        <div class="grid-4">
+            <div class="step-card"><div class="step-num">1</div><h3>Browse Products</h3><p>Explore our catalogue by category, search, or filter by price and rating.</p></div>
+            <div class="step-card"><div class="step-num">2</div><h3>Add to Cart</h3><p>Add products instantly. No account or login needed whatsoever.</p></div>
+            <div class="step-card"><div class="step-num">3</div><h3>Checkout</h3><p>Enter your shipping details and choose COD or online payment.</p></div>
+            <div class="step-card"><div class="step-num">4</div><h3>Get Delivered</h3><p>Your order is confirmed and dispatched. Track it to your door.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="products">
+    <div class="inner">
+        <div class="section-hd">
+            <h2>Featured Products</h2>
+            <p>Handpicked selection from our top categories</p>
+        </div>
+        <div class="products-grid" id="featuredGrid">
+            <div class="loading-msg"><div class="spinner"></div><p>Loading…</p></div>
+        </div>
+        <div class="view-all-wrap">
+            <button class="btn-view-all" onclick="window.location.href='customerhome.html'">View All Products →</button>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div><div class="f-brand">BharatBazaar</div><p class="f-desc">India's live shopping platform — connecting buyers with verified sellers through live video, real products, and seamless checkout.</p></div>
+        <div class="footer-col"><h4>Quick Links</h4><a href="customerhome.html">All Products</a><a href="#features">Features</a><a href="login.html">Seller Login</a><a href="cart.html">My Cart</a></div>
+        <div class="footer-col"><h4>Support</h4><a href="#">Contact Us</a><a href="#">FAQs</a><a href="#">Shipping Policy</a><a href="#">Returns</a></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 BharatBazaar. All rights reserved.</div>
+</footer>
+
+<div id="toast" class="toast"></div>
+<script src="chatbot.js"></script>
+<script>
+// ── Guest Session ─────────────────────────────────────────────────────────────
+function getGuestId() {
+    let id = localStorage.getItem('guestSessionId');
+    if (!id) { id = 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2,9); localStorage.setItem('guestSessionId', id); }
+    return id;
+}
+function apiHeaders(json = true) {
+    const token = localStorage.getItem('authToken');
+    const h = {};
+    if (json) h['Content-Type'] = 'application/json';
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    else h['X-Guest-Session'] = getGuestId();
+    return h;
+}
+
+// ── Cart badge ────────────────────────────────────────────────────────────────
+async function refreshCartBadge() {
+    try {
+        const res = await fetch('/api/cart', { headers: apiHeaders(false) });
+        if (!res.ok) return;
+        const d = await res.json();
+        const n = (d.cart?.items || []).reduce((s, i) => s + i.quantity, 0);
+        const badge = document.getElementById('navCartBadge');
+        if (n > 0) { badge.textContent = n > 9 ? '9+' : n; badge.style.display = 'flex'; }
+    } catch (_) {}
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Product card builder ──────────────────────────────────────────────────────
+function buildCard(p) {
+    const img = (p.images && p.images[0]) || 'https://placehold.co/400x280?text=No+Image';
+    const price = p.price || 0;
+    const disc = p.discount || 0;
+    const orig = p.originalPrice;
+    const rating = p.rating?.average || 0;
+    const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+        ${disc > 0 ? `<div class="disc-badge">${disc}% OFF</div>` : ''}
+        <div class="p-img-wrap">
+            <img src="${img}" alt="${p.name}" class="p-img" loading="lazy" onerror="this.src='https://placehold.co/400x280?text=No+Image'">
+        </div>
+        <div class="p-body">
+            <div class="p-cat">${p.category}</div>
+            <div class="p-name">${p.name}</div>
+            <div class="p-desc">${(p.description||'').slice(0,75)}…</div>
+            <div class="p-pricing">
+                <span class="p-price">₹${price.toLocaleString('en-IN')}</span>
+                ${orig && orig > price ? `<span class="p-orig">₹${orig.toLocaleString('en-IN')}</span>` : ''}
+            </div>
+            <div class="p-rating"><span style="color:#f7931e">${stars}</span> ${rating.toFixed(1)} (${(p.rating?.count||0).toLocaleString()})</div>
+            <div class="p-actions">
+                <button class="btn-view" onclick="window.location.href='productdetail.html?id=${p._id}'">Details</button>
+                <button class="btn-add" id="add-${p._id}" onclick="addToCart('${p._id}', this)">🛒 Add</button>
+            </div>
+        </div>`;
+    return card;
+}
+
+// ── Add to cart ───────────────────────────────────────────────────────────────
+async function addToCart(productId, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    try {
+        const res = await fetch('/api/cart/add', {
+            method: 'POST', headers: apiHeaders(),
+            body: JSON.stringify({ productId, quantity: 1 })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        showToast('Added to cart! 🛒', 'success');
+        refreshCartBadge();
+        btn.textContent = '✓ Added';
+        setTimeout(() => { btn.textContent = '🛒 Add'; btn.disabled = false; }, 2000);
+    } catch (err) {
+        showToast(err.message, 'error');
+        btn.textContent = '🛒 Add'; btn.disabled = false;
+    }
+}
+
+// ── Load featured ─────────────────────────────────────────────────────────────
+async function loadFeatured() {
+    const grid = document.getElementById('featuredGrid');
+    try {
+        const res = await fetch('/api/products/featured/list');
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error);
+        grid.innerHTML = '';
+        if (!d.products?.length) { grid.innerHTML = '<p class="loading-msg">No products available yet.</p>'; return; }
+        d.products.forEach(p => grid.appendChild(buildCard(p)));
+    } catch (err) {
+        grid.innerHTML = `<p class="loading-msg" style="color:#ff6b35">Could not load products — ${err.message}</p>`;
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => { loadFeatured(); refreshCartBadge(); });
+</script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

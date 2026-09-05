@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Monitor - BHARATBAZAAR</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%); color: #e8ecff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        
+        .navbar { background: rgba(15,20,25,0.95); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(122,60,240,0.2); position: sticky; top: 0; z-index: 100; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .brand-dot { width: 14px; height: 14px; background: linear-gradient(135deg, #19D3DA, #7A3CF0); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
+        .seller-badge { background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .notification-icon { position: relative; font-size: 1.3rem; cursor: pointer; margin-right: 1.5rem; }
+        .notification-badge { position: absolute; top: -8px; right: -8px; background: #FF4D6D; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+        .btn-logout { background: #FF4D6D; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .nav-actions { display: flex; align-items: center; }
+        
+        .dashboard-layout { display: flex; padding: 2rem; gap: 2rem; }
+        .dashboard-sidebar { width: 260px; background: rgba(30, 35, 64, 0.5); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(122,60,240,0.2); }
+        .sidebar-header h3 { color: #fff; margin-bottom: 1.5rem; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem; color: #c9ceef; text-decoration: none; border-radius: 10px; transition: 0.2s; }
+        .menu-item:hover, .menu-item.active { background: rgba(122,60,240,0.3); color: #fff; }
+        .menu-icon { font-size: 1.2rem; }
+        .menu-text { font-size: 0.95rem; font-weight: 500; }
+        .menu-badge { margin-left: auto; background: #FF4D6D; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        
+        .dashboard-main { flex: 1; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .dashboard-header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #7A3CF0 0%, #19D3DA 85%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-subtitle { color: #c9ceef; margin-top: 0.5rem; }
+        .toggle-switch { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; }
+        .toggle-switch input { display: none; }
+        .toggle-slider { width: 50px; height: 26px; background: rgba(30, 35, 64, 0.8); border-radius: 20px; position: relative; transition: 0.3s; }
+        .toggle-slider:before { content: ''; position: absolute; width: 20px; height: 20px; background: #c9ceef; border-radius: 50%; top: 3px; left: 3px; transition: 0.3s; }
+        .toggle-switch input:checked + .toggle-slider { background: linear-gradient(135deg, #32E685, #5CF0A0); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); background: white; }
+        .toggle-label { color: #c9ceef; font-weight: 600; }
+        
+        .queue-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .stat-content { flex: 1; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #fff; }
+        .stat-label { color: #c9ceef; font-size: 0.9rem; margin-top: 0.3rem; }
+        
+        .queue-section { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .section-title { color: #fff; font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+        .live-dot { width: 10px; height: 10px; background: #FF4D6D; border-radius: 50%; animation: pulse 2s infinite; }
+        .btn-refresh { background: rgba(30, 35, 64, 0.8); color: #c9ceef; border: 1px solid rgba(122,60,240,0.3); padding: 0.7rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        
+        .queue-list { display: flex; flex-direction: column; gap: 1rem; }
+        .queue-item { background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .queue-position { background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; }
+        .queue-customer-info { flex: 1; display: flex; align-items: center; gap: 1rem; }
+        .customer-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, #19D3DA, #4DE3EA); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: #000; }
+        .customer-name { color: #fff; font-weight: 700; font-size: 1.1rem; }
+        .customer-product { color: #c9ceef; margin-top: 0.3rem; }
+        .queue-meta { display: flex; flex-direction: column; gap: 0.5rem; }
+        .wait-time { display: flex; align-items: center; gap: 0.5rem; color: #FFB547; font-weight: 600; }
+        .customer-phone { color: #9aa1d2; font-size: 0.9rem; }
+        .queue-actions { display: flex; gap: 0.8rem; }
+        .btn-assign { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-remove { background: rgba(255,77,109,0.2); color: #FF4D6D; border: none; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+        
+        .empty-state { text-align: center; padding: 3rem; color: #9aa1d2; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+        .empty-subtitle { font-size: 0.9rem; color: #7a7f9f; margin-top: 0.5rem; }
+        .loading-spinner { text-align: center; padding: 3rem; color: #c9ceef; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(122,60,240,0.3); border-top: 4px solid #7A3CF0; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .history-section { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 2rem; }
+        .history-list { display: flex; flex-direction: column; gap: 1rem; }
+        .history-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(20, 25, 44, 0.5); border-radius: 10px; }
+        .history-icon { font-size: 1.5rem; }
+        .history-content { flex: 1; }
+        .history-text { color: #fff; font-weight: 600; }
+        .history-time { color: #9aa1d2; font-size: 0.85rem; margin-top: 0.3rem; }
+        .empty-text { text-align: center; color: #9aa1d2; padding: 2rem; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: rgba(26,31,42,0.98); border: 1px solid rgba(122,60,240,0.3); border-radius: 16px; padding: 2rem; max-width: 600px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .modal-header h2 { color: #fff; }
+        .btn-close { background: rgba(255,77,109,0.2); color: #FF4D6D; border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+        .modal-body { display: flex; flex-direction: column; gap: 1.5rem; }
+        .customer-preview { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(20, 25, 44, 0.5); border-radius: 10px; }
+        .customer-avatar-large { width: 60px; height: 60px; background: linear-gradient(135deg, #19D3DA, #4DE3EA); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; color: #000; }
+        .form-group label { display: block; color: #c9ceef; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group select { width: 100%; padding: 0.9rem; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; color: #fff; font-size: 1rem; }
+        .form-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+        .btn-cancel { background: rgba(30, 35, 64, 0.8); color: #c9ceef; border: 1px solid rgba(122,60,240,0.3); padding: 0.9rem 1.8rem; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-submit { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; border: none; padding: 0.9rem 1.8rem; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: #32E685; color: #000; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 1000; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: #FF4D6D; color: white; }
+        .toast.info { background: #19D3DA; color: #000; }
+        
+        @media (max-width: 1024px) {
+            .dashboard-layout { flex-direction: column; }
+            .dashboard-sidebar { width: 100%; }
+            .queue-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">BHARATBAZAAR</span>
+                <span class="seller-badge">Seller</span>
+            </div>
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">3</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="sellerdashboard.html" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Overview</span>
+                </a>
+                <a href="sellerproducts.html" class="menu-item">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Manage Products</span>
+                </a>
+                <a href="sellerlinks.html" class="menu-item">
+                    <span class="menu-icon">🔗</span>
+                    <span class="menu-text">Generated Links</span>
+                </a>
+                <a href="sellerqueue.html" class="menu-item active">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Queue Monitor</span>
+                    <span class="menu-badge" id="queueBadge">0</span>
+                </a>
+                <a href="sellerrooms.html" class="menu-item">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Rooms Control</span>
+                </a>
+                <a href="selleranalytics.html" class="menu-item">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">Analytics</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <h1>Customer Queue Monitor</h1>
+                    <p class="header-subtitle">Manage waiting customers and assign them to live rooms</p>
+                </div>
+                <div class="header-actions">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoAssignToggle" onchange="toggleAutoAssign()">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Auto-Assign</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="queue-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #19D3DA, #4DE3EA);">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalWaiting">0</div>
+                        <div class="stat-label">Customers Waiting</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #7A3CF0, #A35AF7);">⏱️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="avgWaitTime">0:00</div>
+                        <div class="stat-label">Avg. Wait Time</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #32E685, #5CF0A0);">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="servedToday">0</div>
+                        <div class="stat-label">Served Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queue-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="live-dot"></span>
+                        Live Queue
+                    </h2>
+                    <button class="btn-refresh" onclick="refreshQueue()">🔄 Refresh</button>
+                </div>
+                <div class="queue-list" id="queueList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading queue...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="assignRoomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assign to Room</h2>
+                <button class="btn-close" onclick="closeAssignModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="customer-info" id="assignCustomerInfo"></div>
+                <div class="form-group">
+                    <label for="selectRoom">Select Room *</label>
+                    <select id="selectRoom" required>
+                        <option value="">Choose available room</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-cancel" onclick="closeAssignModal()">Cancel</button>
+                    <button class="btn-submit" onclick="confirmAssignment()">Assign Customer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let autoAssignEnabled = false;
+        let selectedCustomer = null;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            loadQueue();
+            loadAvailableRooms();
+            loadHistory();
+            setInterval(loadQueue, 5000);
+        });
+
+        function loadQueue() {
+            const queue = JSON.parse(localStorage.getItem('customerQueue')) || [];
+            const queueList = document.getElementById('queueList');
+            queueList.innerHTML = '';
+            
+            document.getElementById('queueBadge').textContent = queue.length;
+            document.getElementById('totalWaiting').textContent = queue.length;
+            
+            if (queue.length === 0) {
+                queueList.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><p>No customers in queue</p><p class="empty-subtitle">Customers will appear here when they join</p></div>`;
+                return;
+            }
+            
+            queue.forEach((customer, index) => {
+                const waitTime = calculateWaitTime(customer.joinedAt);
+                const customerCard = document.createElement('div');
+                customerCard.className = 'queue-item';
+                customerCard.innerHTML = `
+                    <div class="queue-position">#${index + 1}</div>
+                    <div class="queue-customer-info">
+                        <div class="customer-avatar">${customer.name.charAt(0)}</div>
+                        <div class="customer-details">
+                            <div class="customer-name">${customer.name}</div>
+                            <div class="customer-product">Interested in: <strong>${customer.productName}</strong></div>
+                        </div>
+                    </div>
+                    <div class="queue-meta">
+                        <div class="wait-time"><span class="wait-icon">⏱️</span><span>${waitTime}</span></div>
+                        <div class="customer-phone">📞 ${customer.phone}</div>
+                    </div>
+                    <div class="queue-actions">
+                        <button class="btn-assign" onclick="openAssignModal('${customer.id}')">Assign to Room</button>
+                        <button class="btn-remove" onclick="removeFromQueue('${customer.id}')">✕</button>
+                    </div>
+                `;
+                queueList.appendChild(customerCard);
+            });
+        }
+
+        function calculateWaitTime(joinedAt) {
+            const now = new Date();
+            const joined = new Date(joinedAt);
+            const diffMs = now - joined;
+            const minutes = Math.floor(diffMs / 60000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes} min`;
+            const hours = Math.floor(minutes / 60);
+            return `${hours}h ${minutes % 60}m`;
+        }
+
+        function loadAvailableRooms() {
+            const rooms = [
+                { id: 'room1', name: 'Room 1', salesperson: 'Amit Singh', status: 'available' },
+                { id: 'room2', name: 'Room 2', salesperson: 'Sneha Patel', status: 'available' },
+                { id: 'room3', name: 'Room 3', salesperson: 'Vikram Roy', status: 'busy' }
+            ];
+            
+            const select = document.getElementById('selectRoom');
+            select.innerHTML = '<option value="">Choose available room</option>';
+            
+            rooms.filter(r => r.status === 'available').forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.id;
+                option.textContent = `${room.name} - ${room.salesperson}`;
+                select.appendChild(option);
+            });
+        }
+
+        function openAssignModal(customerId) {
+            const queue = JSON.parse(localStorage.getItem('customerQueue')) || [];
+            const customer = queue.find(c => c.id === customerId);
+            
+            if (!customer) return;
+            
+            selectedCustomer = customer;
+            document.getElementById('assignCustomerInfo').innerHTML = `
+                <div class="customer-preview">
+                    <div class="customer-avatar-large">${customer.name.charAt(0)}</div>
+                    <div>
+                        <h3>${customer.name}</h3>
+                        <p>📞 ${customer.phone}</p>
+                        <p>📦 Interested in: ${customer.productName}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('assignRoomModal').style.display = 'flex';
+        }
+
+        function closeAssignModal() {
+            document.getElementById('assignRoomModal').style.display = 'none';
+            selectedCustomer = null;
+        }
+
+        function confirmAssignment() {
+            const roomId = document.getElementById('selectRoom').value;
+            
+            if (!roomId) {
+                showToast('Please select a room', 'error');
+                return;
+            }
+            
+            if (!selectedCustomer) return;
+            
+            let queue = JSON.parse(localStorage.getItem('customerQueue')) || [];
+            queue = queue.filter(c => c.id !== selectedCustomer.id);
+            localStorage.setItem('customerQueue', JSON.stringify(queue));
+            
+            addToHistory({
+                customerName: selectedCustomer.name,
+                action: 'Assigned to room',
+                roomId: roomId,
+                timestamp: new Date().toISOString()
+            });
+            
+            closeAssignModal();
+            loadQueue();
+            loadHistory();
+            showToast(`${selectedCustomer.name} assigned to room successfully! ✅`, 'success');
+        }
+
+        function removeFromQueue(customerId) {
+            if (!confirm('Remove this customer from queue?')) return;
+            
+            let queue = JSON.parse(localStorage.getItem('customerQueue')) || [];
+            const customer = queue.find(c => c.id === customerId);
+            queue = queue.filter(c => c.id !== customerId);
+            localStorage.setItem('customerQueue', JSON.stringify(queue));
+            
+            if (customer) {
+                addToHistory({
+                    customerName: customer.name,
+                    action: 'Removed from queue',
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            loadQueue();
+            loadHistory();
+            showToast('Customer removed from queue', 'success');
+        }
+
+        function toggleAutoAssign() {
+            autoAssignEnabled = document.getElementById('autoAssignToggle').checked;
+            showToast(autoAssignEnabled ? 'Auto-assign enabled ✅' : 'Auto-assign disabled', 'info');
+        }
+
+        function refreshQueue() {
+            loadQueue();
+            showToast('Queue refreshed', 'success');
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('queueHistory')) || [];
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p class="empty-text">No recent activity</p>';
+                return;
+            }
+            
+            history.slice(-10).reverse().forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-icon">${item.action.includes('Assigned') ? '✅' : '❌'}</div>
+                    <div class="history-content">
+                        <div class="history-text">${item.customerName} - ${item.action}</div>
+                        <div class="history-time">${new Date(item.timestamp).toLocaleString()}</div>
+                    </div>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        function addToHistory(item) {
+            let history = JSON.parse(localStorage.getItem('queueHistory')) || [];
+            history.push(item);
+            localStorage.setItem('queueHistory', JSON.stringify(history));
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

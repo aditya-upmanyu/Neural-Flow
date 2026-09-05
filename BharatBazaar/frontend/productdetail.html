@@ -1,0 +1,400 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details — BharatBazaar</title>
+    <link rel="stylesheet" href="chatbot.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9f9fc; color: #1a1a2e; min-height: 100vh; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); padding: 1rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid #ededf5; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: #1a1a2e; text-decoration: none; flex-shrink: 0; }
+        .brand-dot { width: 11px; height: 11px; background: linear-gradient(135deg,#ff6b35,#f7931e); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+        .nav-links { display: flex; gap: 0.2rem; list-style: none; margin-left: auto; }
+        .nav-links a { color: #4a4a6a; text-decoration: none; padding: 0.45rem 0.9rem; border-radius: 7px; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
+        .nav-links a:hover { background: rgba(255,107,53,.1); color: #ff6b35; }
+        .nav-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+        .btn-cart-nav { position: relative; background: #fff8f5; border: 1.5px solid #ff6b35; color: #ff6b35; padding: 0.5rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cart-nav:hover { background: #ff6b35; color: #fff; }
+        .cart-badge { position: absolute; top: -7px; right: -7px; background: #ff6b35; color: #fff; font-size: 0.68rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+
+        /* PAGE */
+        .page-wrap { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+        .breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #9999bb; margin-bottom: 2rem; flex-wrap: wrap; }
+        .breadcrumb a { color: #ff6b35; text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* PRODUCT DETAIL GRID */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: start; }
+
+        /* IMAGE SLIDER */
+        .slider-wrap { background: #fff; border-radius: 20px; border: 1px solid #ededf5; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+        .main-img-wrap { position: relative; height: 380px; overflow: hidden; }
+        .main-img { width: 100%; height: 100%; object-fit: contain; padding: 1rem; background: #fafafa; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: 1px solid #e0e0ee; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; color: #1a1a2e; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+        .slider-btn:hover { background: #ff6b35; color: #fff; border-color: #ff6b35; }
+        .slider-btn.prev { left: 12px; }
+        .slider-btn.next { right: 12px; }
+        .thumb-row { display: flex; gap: 0.6rem; padding: 1rem; overflow-x: auto; }
+        .thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; flex-shrink: 0; background: #f5f5fb; }
+        .thumb.active { border-color: #ff6b35; }
+        .thumb:hover { border-color: #f7931e; }
+
+        /* PRODUCT INFO */
+        .prod-info { display: flex; flex-direction: column; gap: 1rem; }
+        .prod-cat { font-size: 0.75rem; font-weight: 700; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.5px; }
+        .prod-name { font-size: 1.8rem; font-weight: 800; color: #1a1a2e; line-height: 1.25; }
+        .prod-rating-row { display: flex; align-items: center; gap: 1rem; }
+        .stars { color: #f7931e; font-size: 1rem; }
+        .rating-text { font-size: 0.88rem; color: #7a7a9a; }
+        .pricing-row { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+        .main-price { font-size: 2rem; font-weight: 900; color: #ff6b35; }
+        .orig-price { font-size: 1rem; color: #bbb; text-decoration: line-through; }
+        .disc-chip { background: #fff3ee; color: #ff6b35; font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+        .stock-row { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; font-weight: 600; }
+        .in-stock { color: #18a349; }
+        .out-stock { color: #e8304a; }
+        .qty-row { display: flex; align-items: center; gap: 0.75rem; }
+        .qty-label { font-size: 0.9rem; font-weight: 600; color: #4a4a6a; }
+        .qty-ctrl { display: flex; align-items: center; gap: 0; background: #f5f5fb; border: 1.5px solid #e0e0ee; border-radius: 10px; overflow: hidden; }
+        .qty-btn { width: 36px; height: 36px; background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #4a4a6a; transition: all 0.2s; }
+        .qty-btn:hover { background: #ff6b35; color: #fff; }
+        .qty-val { width: 40px; text-align: center; font-size: 1rem; font-weight: 700; color: #1a1a2e; }
+        .action-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .btn-add-cart { flex: 1; min-width: 160px; background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; border: none; padding: 1rem 1.5rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(255,107,53,.3); }
+        .btn-add-cart:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,.4); }
+        .btn-add-cart:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-buy-now { flex: 1; min-width: 140px; background: #fff; border: 2px solid #ff6b35; color: #ff6b35; padding: 1rem 1.5rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-buy-now:hover { background: rgba(255,107,53,.06); }
+        .prod-desc-full { color: #5a5a7a; line-height: 1.7; font-size: 0.95rem; }
+
+        /* FEATURES & SPECS */
+        .info-section { margin-top: 3rem; }
+        .tabs { display: flex; gap: 0; border-bottom: 2px solid #ededf5; margin-bottom: 1.5rem; }
+        .tab { padding: 0.75rem 1.5rem; font-weight: 600; font-size: 0.92rem; color: #8888aa; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .tab.active { color: #ff6b35; border-bottom-color: #ff6b35; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .features-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+        .features-list li { display: flex; align-items: flex-start; gap: 0.7rem; font-size: 0.93rem; color: #4a4a6a; padding: 0.5rem 0; border-bottom: 1px solid #f5f5fb; }
+        .features-list li::before { content: '✓'; color: #ff6b35; font-weight: 700; margin-top: 0.1rem; flex-shrink: 0; }
+        .specs-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .specs-table tr:nth-child(odd) { background: #fafafa; }
+        .specs-table td { padding: 0.7rem 1rem; border: 1px solid #ededf5; }
+        .specs-table td:first-child { font-weight: 700; color: #4a4a6a; width: 35%; }
+        .tags-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .tag-chip { background: #fff3ee; color: #ff6b35; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; }
+
+        /* RELATED */
+        .related-section { margin-top: 3.5rem; }
+        .related-section h2 { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; margin-bottom: 1.5rem; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
+        .rel-card { background: #fff; border: 1px solid #ededf5; border-radius: 14px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+        .rel-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(255,107,53,.15); border-color: #ff6b35; }
+        .rel-img { width: 100%; height: 140px; object-fit: cover; background: #f5f5fb; }
+        .rel-body { padding: 0.9rem; }
+        .rel-name { font-size: 0.88rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.35rem; line-height: 1.3; }
+        .rel-price { font-size: 1rem; font-weight: 800; color: #ff6b35; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.9rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; color: #fff; background: #1a1a2e; max-width: 300px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #18a349; }
+        .toast.error { background: #e8304a; }
+
+        /* LOADING */
+        .loading-wrap { text-align: center; padding: 6rem 2rem; }
+        .spinner { width: 44px; height: 44px; border: 3px solid #f0e8ff; border-top-color: #ff6b35; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } .main-img-wrap { height: 300px; } .nav-links { display: none; } }
+        @media (max-width: 600px) { .navbar { padding: 0.85rem 1.25rem; } .page-wrap { padding: 1.25rem 1rem 3rem; } .prod-name { font-size: 1.4rem; } .main-price { font-size: 1.6rem; } .action-btns { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="brand"><div class="brand-dot"></div>BharatBazaar</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="customerhome.html">Products</a></li>
+    </ul>
+    <div class="nav-actions">
+        <button class="btn-cart-nav" onclick="window.location.href='cart.html'">
+            🛒 Cart<span class="cart-badge" id="navCartBadge"></span>
+        </button>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="breadcrumb">
+        <a href="index.html">Home</a> › <a href="customerhome.html">Products</a> › <span id="bcName">Loading…</span>
+    </div>
+
+    <div id="mainContent">
+        <div class="loading-wrap"><div class="spinner"></div><p style="color:#9999bb">Loading product…</p></div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="chatbot.js"></script>
+<script>
+let product = null;
+let currentImg = 0;
+let qty = 1;
+
+// ── Guest session ─────────────────────────────────────────────────────────────
+function getGuestId() {
+    let id = localStorage.getItem('guestSessionId');
+    if (!id) { id = 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2,9); localStorage.setItem('guestSessionId', id); }
+    return id;
+}
+function apiHeaders(json = true) {
+    const token = localStorage.getItem('authToken');
+    const h = {};
+    if (json) h['Content-Type'] = 'application/json';
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    else h['X-Guest-Session'] = getGuestId();
+    return h;
+}
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── Cart badge ────────────────────────────────────────────────────────────────
+async function refreshCartBadge() {
+    try {
+        const res = await fetch('/api/cart', { headers: apiHeaders(false) });
+        if (!res.ok) return;
+        const d = await res.json();
+        const n = (d.cart?.items || []).reduce((s, i) => s + i.quantity, 0);
+        const badge = document.getElementById('navCartBadge');
+        if (n > 0) { badge.textContent = n > 9 ? '9+' : n; badge.style.display = 'flex'; }
+    } catch (_) {}
+}
+
+// ── Load product ──────────────────────────────────────────────────────────────
+async function loadProduct() {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) { window.location.href = 'customerhome.html'; return; }
+    try {
+        const res = await fetch('/api/products/' + id);
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Product not found');
+        product = d.product;
+        renderProduct();
+        loadRelated();
+    } catch (err) {
+        document.getElementById('mainContent').innerHTML = `
+            <div style="text-align:center;padding:5rem 2rem">
+                <div style="font-size:3rem;margin-bottom:1rem">😕</div>
+                <h2 style="color:#1a1a2e;margin-bottom:0.5rem">Product not found</h2>
+                <p style="color:#7a7a9a;margin-bottom:1.5rem">${err.message}</p>
+                <a href="customerhome.html" style="background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;padding:0.9rem 2rem;border-radius:10px;text-decoration:none;font-weight:700;">Back to Products</a>
+            </div>`;
+    }
+}
+
+function renderProduct() {
+    const p = product;
+    document.title = p.name + ' — BharatBazaar';
+    document.getElementById('bcName').textContent = p.name;
+
+    const images = p.images || [];
+    const price = p.price || 0;
+    const orig = p.originalPrice;
+    const disc = p.discount || 0;
+    const rating = p.rating?.average || 0;
+    const rCount = p.rating?.count || 0;
+    const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+    const inStock = p.stock > 0;
+
+    // Build features list
+    const feats = (p.features || []).map(f => `<li>${f}</li>`).join('') || '<li>No features listed</li>';
+
+    // Build specs table
+    let specsRows = '';
+    if (p.specifications && typeof p.specifications === 'object') {
+        const entries = p.specifications instanceof Map ? [...p.specifications.entries()] : Object.entries(p.specifications);
+        specsRows = entries.map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+    }
+    if (!specsRows) specsRows = '<tr><td colspan="2" style="text-align:center;color:#aaa">No specifications available</td></tr>';
+
+    // Tags
+    const tags = (p.tags || []).map(t => `<span class="tag-chip">#${t}</span>`).join('');
+
+    // Thumbnail slides
+    const thumbs = images.map((img, i) =>
+        `<img src="${img}" class="thumb ${i===0?'active':''}" onclick="setSlide(${i})" loading="lazy"
+              onerror="this.src='https://placehold.co/70x70?text=X'">`
+    ).join('');
+
+    const html = `
+    <div class="detail-grid">
+        <div class="slider-wrap">
+            <div class="main-img-wrap">
+                <img id="mainImg" src="${images[0] || 'https://placehold.co/400x380?text=No+Image'}" alt="${p.name}" class="main-img"
+                     onerror="this.src='https://placehold.co/400x380?text=No+Image'">
+                ${images.length > 1 ? `
+                <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
+                <button class="slider-btn next" onclick="changeSlide(1)">❯</button>` : ''}
+            </div>
+            ${thumbs ? `<div class="thumb-row" id="thumbRow">${thumbs}</div>` : ''}
+        </div>
+
+        <div class="prod-info">
+            <div class="prod-cat">${p.category}</div>
+            <h1 class="prod-name">${p.name}</h1>
+            <div class="prod-rating-row">
+                <span class="stars">${stars}</span>
+                <span class="rating-text">${rating.toFixed(1)} (${rCount.toLocaleString()} reviews)</span>
+            </div>
+            <div class="pricing-row">
+                <span class="main-price">₹${price.toLocaleString('en-IN')}</span>
+                ${orig && orig > price ? `<span class="orig-price">₹${orig.toLocaleString('en-IN')}</span>` : ''}
+                ${disc > 0 ? `<span class="disc-chip">${disc}% off</span>` : ''}
+            </div>
+            <div class="stock-row">
+                ${inStock
+                    ? `<span class="in-stock">✓ In Stock</span><span style="color:#9999bb;font-size:0.82rem;font-weight:500">${p.stock} units available</span>`
+                    : `<span class="out-stock">✗ Out of Stock</span>`}
+            </div>
+            <div class="qty-row">
+                <span class="qty-label">Qty:</span>
+                <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                    <span class="qty-val" id="qtyVal">1</span>
+                    <button class="qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+            </div>
+            <div class="action-btns">
+                <button class="btn-add-cart" id="addCartBtn" onclick="addToCart()" ${!inStock?'disabled':''}>
+                    ${inStock ? '🛒 Add to Cart' : 'Out of Stock'}
+                </button>
+                <button class="btn-buy-now" onclick="buyNow()" ${!inStock?'disabled':''} style="${!inStock?'opacity:0.5;cursor:not-allowed':''}">
+                    ⚡ Buy Now
+                </button>
+            </div>
+            <p class="prod-desc-full">${p.description || 'No description available.'}</p>
+            ${tags ? `<div class="tags-row">${tags}</div>` : ''}
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('features', this)">Features</div>
+            <div class="tab" onclick="switchTab('specs', this)">Specifications</div>
+        </div>
+        <div class="tab-content active" id="tab-features">
+            <ul class="features-list">${feats}</ul>
+        </div>
+        <div class="tab-content" id="tab-specs">
+            <table class="specs-table">${specsRows}</table>
+        </div>
+    </div>
+
+    <div class="related-section">
+        <h2>You May Also Like</h2>
+        <div class="related-grid" id="relatedGrid">
+            <p style="color:#9999bb;grid-column:1/-1">Loading related products…</p>
+        </div>
+    </div>`;
+
+    document.getElementById('mainContent').innerHTML = html;
+}
+
+// ── Slider controls ───────────────────────────────────────────────────────────
+function setSlide(i) {
+    if (!product) return;
+    const images = product.images || [];
+    currentImg = i;
+    const main = document.getElementById('mainImg');
+    if (main && images[i]) main.src = images[i];
+    document.querySelectorAll('.thumb').forEach((t, idx) => t.classList.toggle('active', idx === i));
+}
+function changeSlide(dir) {
+    const len = (product?.images || []).length;
+    if (len === 0) return;
+    setSlide((currentImg + dir + len) % len);
+}
+
+// ── Qty controls ──────────────────────────────────────────────────────────────
+function changeQty(d) {
+    qty = Math.max(1, Math.min(product?.stock || 1, qty + d));
+    document.getElementById('qtyVal').textContent = qty;
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── Add to cart ───────────────────────────────────────────────────────────────
+async function addToCart() {
+    if (!product) return;
+    const btn = document.getElementById('addCartBtn');
+    btn.disabled = true; btn.textContent = 'Adding…';
+    try {
+        const res = await fetch('/api/cart/add', {
+            method: 'POST', headers: apiHeaders(),
+            body: JSON.stringify({ productId: product._id, quantity: qty })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        showToast(`${product.name} added to cart! 🛒`, 'success');
+        refreshCartBadge();
+        btn.textContent = '✓ Added to Cart';
+        setTimeout(() => { btn.textContent = '🛒 Add to Cart'; btn.disabled = false; }, 2500);
+    } catch (err) {
+        showToast(err.message, 'error');
+        btn.textContent = '🛒 Add to Cart'; btn.disabled = false;
+    }
+}
+
+// ── Buy now ───────────────────────────────────────────────────────────────────
+async function buyNow() {
+    await addToCart();
+    setTimeout(() => window.location.href = 'cart.html', 800);
+}
+
+// ── Related products ──────────────────────────────────────────────────────────
+async function loadRelated() {
+    if (!product) return;
+    const grid = document.getElementById('relatedGrid');
+    if (!grid) return;
+    try {
+        const res = await fetch(`/api/products?category=${product.category}&limit=5`);
+        const d = await res.json();
+        const items = (d.products || []).filter(p => p._id !== product._id).slice(0, 4);
+        if (!items.length) { grid.innerHTML = '<p style="color:#9999bb">No related products found.</p>'; return; }
+        grid.innerHTML = '';
+        items.forEach(p => {
+            const img = (p.images && p.images[0]) || 'https://placehold.co/200x140?text=No+Image';
+            const card = document.createElement('div');
+            card.className = 'rel-card';
+            card.onclick = () => window.location.href = 'productdetail.html?id=' + p._id;
+            card.innerHTML = `
+                <img src="${img}" class="rel-img" loading="lazy" onerror="this.src='https://placehold.co/200x140?text=No+Image'">
+                <div class="rel-body">
+                    <div class="rel-name">${p.name}</div>
+                    <div class="rel-price">₹${(p.price||0).toLocaleString('en-IN')}</div>
+                </div>`;
+            grid.appendChild(card);
+        });
+    } catch (_) { if (grid) grid.innerHTML = '<p style="color:#aaa">Could not load related products.</p>'; }
+}
+
+window.addEventListener('DOMContentLoaded', () => { loadProduct(); refreshCartBadge(); });
+</script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

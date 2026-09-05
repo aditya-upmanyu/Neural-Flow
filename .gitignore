@@ -22,9 +22,14 @@ dist-ssr/
 *.tsbuildinfo
 
 # ===== LOGS =====
-logs/
-*.log
-backend/logs/
+logs/*.log
+logs/*.json
+logs/exports/*
+!logs/.gitkeep
+backend/logs/*.log
+backend/logs/*.json
+backend/logs/exports/*
+!backend/logs/.gitkeep
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -113,6 +118,10 @@ GITHUB_READY.md
 SUBMISSION_READY.md
 context_nfv3.md
 nfv3_enhancements.md
+PRESENTATION_PROMPT.md
+PROJECT_SUBMISSION_ANSWERS.md
+NEURALFLOW_PRESENTATION.md
+SYSTEM_STATUS_REPORT.md
 
 # Garbled/temp filenames
 "ΓΣà_PROJECT_COMPLETE.txt"

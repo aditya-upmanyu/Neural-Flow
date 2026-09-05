@@ -1,0 +1,782 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Seller Dashboard</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/seller-dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        /* Additional Analytics-Specific Styles */
+        .time-filter {
+            background: var(--bg-elevated);
+            color: var(--text-high);
+            border: 1px solid var(--stroke);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-filter:focus {
+            outline: none;
+            border-color: var(--accent-violet);
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-elevated);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .analytics-table thead {
+            background: rgba(30, 35, 64, 0.5);
+        }
+
+        .analytics-table th {
+            padding: 16px;
+            text-align: left;
+            color: var(--text-high);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--stroke);
+        }
+
+        .analytics-table td {
+            padding: 16px;
+            color: var(--text-medium);
+            border-bottom: 1px solid var(--stroke);
+        }
+
+        .analytics-table tbody tr:hover {
+            background: rgba(30, 35, 64, 0.3);
+        }
+
+        .analytics-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+            color: #000;
+        }
+
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #CD7F32, #B87333);
+            color: #000;
+        }
+
+        .trend-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .trend-badge.positive {
+            background: rgba(50, 230, 133, 0.15);
+            color: var(--success-green);
+        }
+
+        .trend-badge.negative {
+            background: rgba(255, 77, 109, 0.15);
+            color: var(--error-red);
+        }
+
+        .trend-badge.neutral {
+            background: rgba(122, 60, 240, 0.15);
+            color: var(--accent-violet);
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .performance-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+
+        .performance-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .performance-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--stroke);
+        }
+
+        .salesperson-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .perf-stat {
+            text-align: center;
+        }
+
+        .perf-label {
+            display: block;
+            color: var(--text-low);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .perf-value {
+            display: block;
+            color: var(--text-high);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .performance-rating {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: rgba(30, 35, 64, 0.3);
+            border-radius: var(--radius-sm);
+        }
+
+        .rating-text {
+            color: var(--text-low);
+            font-size: 0.9rem;
+        }
+
+        .analytics-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .analytics-section.half {
+            background: var(--bg-elevated);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .peak-hours-list,
+        .demographics-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .peak-hour-item,
+        .demo-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .hour-label,
+        .demo-label {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        .hour-bar,
+        .demo-bar {
+            flex: 1;
+            height: 28px;
+            background: linear-gradient(90deg, var(--accent-violet), var(--accent-pink));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .hour-bar:hover,
+        .demo-bar:hover {
+            transform: scaleX(1.02);
+            box-shadow: 0 4px 12px rgba(122, 60, 240, 0.4);
+        }
+
+        .hour-value,
+        .demo-value {
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 968px) {
+            .analytics-row {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">LIVE SHOP</span>
+                <span class="seller-badge">Seller</span>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">3</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar Menu -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="seller-dashboard.html" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Overview</span>
+                </a>
+                <a href="seller-products.html" class="menu-item">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Manage Products</span>
+                </a>
+                <a href="seller-links.html" class="menu-item">
+                    <span class="menu-icon">🔗</span>
+                    <span class="menu-text">Generated Links</span>
+                </a>
+                <a href="seller-queue.html" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Queue Monitor</span>
+                </a>
+                <a href="seller-rooms.html" class="menu-item">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Rooms Control</span>
+                </a>
+                <a href="seller-analytics.html" class="menu-item active">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">Analytics</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">⚙</span>
+                    <span class="menu-text">Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <h1>Sales Analytics</h1>
+                    <p class="header-subtitle">Track your performance and revenue</p>
+                </div>
+                <div class="header-actions">
+                    <select id="timeFilter" onchange="filterAnalytics()" class="time-filter">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month" selected>This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                    <button class="btn-secondary" onclick="exportReport()">
+                        📥 Export Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Revenue Stats -->
+            <div class="stats-grid">
+                <div class="stat-card large">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #32E685, #5CF0A0);">
+                        💰
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalRevenue">₹15,67,890</div>
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-trend positive" id="revenueTrend">+23.5% from last month</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #7A3CF0, #A35AF7);">
+                        📦
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalOrders">234</div>
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-trend positive" id="ordersTrend">+18%</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #19D3DA, #4DE3EA);">
+                        📈
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="conversionRate">68%</div>
+                        <div class="stat-label">Conversion Rate</div>
+                        <div class="stat-trend positive" id="conversionTrend">+5%</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FF66C4, #FF99D9);">
+                        💵
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="avgOrderValue">₹6,700</div>
+                        <div class="stat-label">Avg. Order Value</div>
+                        <div class="stat-trend positive" id="aovTrend">+12%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products -->
+            <div class="analytics-section">
+                <h2 class="section-title">Top Selling Products</h2>
+                <div class="top-products-table">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Product</th>
+                                <th>Sales</th>
+                                <th>Revenue</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsTable">
+                            <!-- Products will be loaded dynamically -->
+                            <tr>
+                                <td><span class="rank-badge gold">1</span></td>
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">iPhone 15 Pro Max</span>
+                                    </div>
+                                </td>
+                                <td><strong>45 units</strong></td>
+                                <td><strong>₹5,84,955</strong></td>
+                                <td><span class="trend-badge positive">↗ +32%</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge silver">2</span></td>
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">AirPods Pro</span>
+                                    </div>
+                                </td>
+                                <td><strong>32 units</strong></td>
+                                <td><strong>₹7,99,968</strong></td>
+                                <td><span class="trend-badge positive">↗ +18%</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank-badge bronze">3</span></td>
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">MacBook Pro 14"</span>
+                                    </div>
+                                </td>
+                                <td><strong>18 units</strong></td>
+                                <td><strong>₹3,59,982</strong></td>
+                                <td><span class="trend-badge positive">↗ +15%</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">Apple Watch Series 9</span>
+                                    </div>
+                                </td>
+                                <td><strong>28 units</strong></td>
+                                <td><strong>₹11,19,972</strong></td>
+                                <td><span class="trend-badge neutral">→ 0%</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">iPad Air</span>
+                                    </div>
+                                </td>
+                                <td><strong>22 units</strong></td>
+                                <td><strong>₹13,19,978</strong></td>
+                                <td><span class="trend-badge negative">↘ -5%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Salesperson Performance -->
+            <div class="analytics-section">
+                <h2 class="section-title">Salesperson Performance</h2>
+                <div class="performance-grid" id="performanceGrid">
+                    <div class="performance-card">
+                        <div class="performance-header">
+                            <div class="salesperson-avatar">A</div>
+                            <div>
+                                <h3>Amit Singh</h3>
+                                <p>Room 1 Host</p>
+                            </div>
+                        </div>
+                        <div class="performance-stats">
+                            <div class="perf-stat">
+                                <span class="perf-label">Sessions</span>
+                                <span class="perf-value">45</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Revenue</span>
+                                <span class="perf-value">₹4.2L</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Conv. Rate</span>
+                                <span class="perf-value">72%</span>
+                            </div>
+                        </div>
+                        <div class="performance-rating">
+                            <span>⭐⭐⭐⭐⭐</span>
+                            <span class="rating-text">4.8/5</span>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <div class="performance-header">
+                            <div class="salesperson-avatar">S</div>
+                            <div>
+                                <h3>Sneha Patel</h3>
+                                <p>Room 2 Host</p>
+                            </div>
+                        </div>
+                        <div class="performance-stats">
+                            <div class="perf-stat">
+                                <span class="perf-label">Sessions</span>
+                                <span class="perf-value">38</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Revenue</span>
+                                <span class="perf-value">₹3.8L</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Conv. Rate</span>
+                                <span class="perf-value">68%</span>
+                            </div>
+                        </div>
+                        <div class="performance-rating">
+                            <span>⭐⭐⭐⭐⭐</span>
+                            <span class="rating-text">4.6/5</span>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <div class="performance-header">
+                            <div class="salesperson-avatar">V</div>
+                            <div>
+                                <h3>Vikram Roy</h3>
+                                <p>Room 3 Host</p>
+                            </div>
+                        </div>
+                        <div class="performance-stats">
+                            <div class="perf-stat">
+                                <span class="perf-label">Sessions</span>
+                                <span class="perf-value">42</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Revenue</span>
+                                <span class="perf-value">₹4.5L</span>
+                            </div>
+                            <div class="perf-stat">
+                                <span class="perf-label">Conv. Rate</span>
+                                <span class="perf-value">75%</span>
+                            </div>
+                        </div>
+                        <div class="performance-rating">
+                            <span>⭐⭐⭐⭐⭐</span>
+                            <span class="rating-text">4.9/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Insights -->
+            <div class="analytics-row">
+                <div class="analytics-section half">
+                    <h2 class="section-title">Peak Hours</h2>
+                    <div class="peak-hours-list">
+                        <div class="peak-hour-item">
+                            <span class="hour-label">🕐 2:00 PM - 4:00 PM</span>
+                            <div class="hour-bar" style="width: 85%;">
+                                <span class="hour-value">85%</span>
+                            </div>
+                        </div>
+                        <div class="peak-hour-item">
+                            <span class="hour-label">🕕 6:00 PM - 8:00 PM</span>
+                            <div class="hour-bar" style="width: 78%;">
+                                <span class="hour-value">78%</span>
+                            </div>
+                        </div>
+                        <div class="peak-hour-item">
+                            <span class="hour-label">🕙 10:00 AM - 12:00 PM</span>
+                            <div class="hour-bar" style="width: 65%;">
+                                <span class="hour-value">65%</span>
+                            </div>
+                        </div>
+                        <div class="peak-hour-item">
+                            <span class="hour-label">🕖 7:00 PM - 9:00 PM</span>
+                            <div class="hour-bar" style="width: 58%;">
+                                <span class="hour-value">58%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-section half">
+                    <h2 class="section-title">Customer Demographics</h2>
+                    <div class="demographics-list">
+                        <div class="demo-item">
+                            <span class="demo-label">👨 Male</span>
+                            <div class="demo-bar" style="width: 58%;">
+                                <span class="demo-value">58%</span>
+                            </div>
+                        </div>
+                        <div class="demo-item">
+                            <span class="demo-label">👩 Female</span>
+                            <div class="demo-bar" style="width: 42%;">
+                                <span class="demo-value">42%</span>
+                            </div>
+                        </div>
+                        <div class="demo-item">
+                            <span class="demo-label">🎯 Age 25-34</span>
+                            <div class="demo-bar" style="width: 45%;">
+                                <span class="demo-value">45%</span>
+                            </div>
+                        </div>
+                        <div class="demo-item">
+                            <span class="demo-label">🎯 Age 18-24</span>
+                            <div class="demo-bar" style="width: 30%;">
+                                <span class="demo-value">30%</span>
+                            </div>
+                        </div>
+                        <div class="demo-item">
+                            <span class="demo-label">🎯 Age 35-44</span>
+                            <div class="demo-bar" style="width: 25%;">
+                                <span class="demo-value">25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Load analytics on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAnalytics('month');
+        });
+
+        // Filter analytics by time period
+        function filterAnalytics() {
+            const filter = document.getElementById('timeFilter').value;
+            loadAnalytics(filter);
+        }
+
+        // Load analytics data
+        async function loadAnalytics(timePeriod) {
+            try {
+                // In production, fetch from API
+                // const response = await fetch(${API_BASE_URL}/analytics?period=${timePeriod});
+                
+                // Simulate data loading
+                await delay(500);
+                
+                // Update stats based on filter
+                const stats = getAnalyticsData(timePeriod);
+                updateStats(stats);
+                
+            } catch (error) {
+                console.error('Load analytics error:', error);
+                showToast('Failed to load analytics', 'error');
+            }
+        }
+
+        // Get analytics data (mock)
+        function getAnalyticsData(period) {
+            const data = {
+                today: {
+                    revenue: 45680,
+                    orders: 12,
+                    conversion: 65,
+                    avgOrderValue: 3807,
+                    revenueTrend: '+15%',
+                    ordersTrend: '+8%',
+                    conversionTrend: '+3%',
+                    aovTrend: '+5%'
+                },
+                week: {
+                    revenue: 289450,
+                    orders: 67,
+                    conversion: 67,
+                    avgOrderValue: 4320,
+                    revenueTrend: '+18%',
+                    ordersTrend: '+12%',
+                    conversionTrend: '+4%',
+                    aovTrend: '+8%'
+                },
+                month: {
+                    revenue: 1567890,
+                    orders: 234,
+                    conversion: 68,
+                    avgOrderValue: 6700,
+                    revenueTrend: '+23.5%',
+                    ordersTrend: '+18%',
+                    conversionTrend: '+5%',
+                    aovTrend: '+12%'
+                },
+                year: {
+                    revenue: 18945672,
+                    orders: 2856,
+                    conversion: 71,
+                    avgOrderValue: 6635,
+                    revenueTrend: '+35%',
+                    ordersTrend: '+28%',
+                    conversionTrend: '+8%',
+                    aovTrend: '+15%'
+                }
+            };
+            
+            return data[period] || data.month;
+        }
+
+        // Update stats display
+        function updateStats(stats) {
+            document.getElementById('totalRevenue').textContent = ₹${stats.revenue.toLocaleString()};
+            document.getElementById('totalOrders').textContent = stats.orders;
+            document.getElementById('conversionRate').textContent = ${stats.conversion}%;
+            document.getElementById('avgOrderValue').textContent = ₹${stats.avgOrderValue.toLocaleString()};
+            
+            document.getElementById('revenueTrend').textContent = ${stats.revenueTrend} from last period;
+            document.getElementById('ordersTrend').textContent = stats.ordersTrend;
+            document.getElementById('conversionTrend').textContent = stats.conversionTrend;
+            document.getElementById('aovTrend').textContent = stats.aovTrend;
+        }
+
+        // Export report
+        function exportReport() {
+            const filter = document.getElementById('timeFilter').value;
+            const stats = getAnalyticsData(filter);
+            
+            // Create CSV data
+            const csvData = [
+                ['Metric', 'Value'],
+                ['Total Revenue', ₹${stats.revenue.toLocaleString()}],
+                ['Total Orders', stats.orders],
+                ['Conversion Rate', ${stats.conversion}%],
+                ['Avg Order Value', ₹${stats.avgOrderValue.toLocaleString()}],
+                ['Period', filter]
+            ];
+            
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = analytics-report-${filter}-${Date.now()}.csv;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('Report exported successfully! 📥', 'success');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = toast ${type} show;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Delay helper
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

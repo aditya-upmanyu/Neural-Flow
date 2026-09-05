@@ -1,0 +1,41 @@
+# ===================================
+# BharatBazaar — .gitignore
+# ===================================
+
+# Environment — NEVER commit real secrets
+.env
+.env.local
+.env.production
+
+# MongoDB local data
+.mongo-data/
+.mongo.log
+.mongo.log.*
+.mongo.pid
+
+# Process / lock files
+.bb/
+*.pid
+*.lock
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Build output
+dist/
+build/
+
+# Temporary uploads
+uploads/

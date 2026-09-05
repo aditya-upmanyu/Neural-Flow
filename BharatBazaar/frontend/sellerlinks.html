@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Links - BHARATBAZAAR</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%); color: #e8ecff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        
+        .navbar { background: rgba(15,20,25,0.95); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(122,60,240,0.2); position: sticky; top: 0; z-index: 100; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .brand-dot { width: 14px; height: 14px; background: linear-gradient(135deg, #19D3DA, #7A3CF0); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
+        .seller-badge { background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .notification-icon { position: relative; font-size: 1.3rem; cursor: pointer; margin-right: 1.5rem; }
+        .notification-badge { position: absolute; top: -8px; right: -8px; background: #FF4D6D; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+        .btn-logout { background: #FF4D6D; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .nav-actions { display: flex; align-items: center; }
+        
+        .dashboard-layout { display: flex; padding: 2rem; gap: 2rem; }
+        .dashboard-sidebar { width: 260px; background: rgba(30, 35, 64, 0.5); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(122,60,240,0.2); }
+        .sidebar-header h3 { color: #fff; margin-bottom: 1.5rem; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem; color: #c9ceef; text-decoration: none; border-radius: 10px; transition: 0.2s; }
+        .menu-item:hover, .menu-item.active { background: rgba(122,60,240,0.3); color: #fff; }
+        .menu-icon { font-size: 1.2rem; }
+        .menu-text { font-size: 0.95rem; font-weight: 500; }
+        
+        .dashboard-main { flex: 1; }
+        .dashboard-header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #7A3CF0 0%, #19D3DA 85%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        .header-subtitle { color: #c9ceef; margin-bottom: 2rem; }
+        
+        .generate-link-section { margin-bottom: 3rem; }
+        .form-card { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 2rem; }
+        .card-title { color: #fff; font-size: 1.3rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .title-icon { font-size: 1.5rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .form-group { position: relative; }
+        .form-group label { display: block; color: #c9ceef; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 0.9rem; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; color: #fff; font-size: 1rem; }
+        .char-count { position: absolute; right: 10px; bottom: -20px; color: #9aa1d2; font-size: 0.85rem; }
+        .btn-generate { width: 100%; background: linear-gradient(135deg, #7A3CF0, #FF66C4); color: white; border: none; padding: 1.2rem; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 2rem; }
+        
+        .generated-link-display { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(122,60,240,0.3); }
+        .generated-link-display h3 { color: #fff; margin-bottom: 1rem; }
+        .link-display-box { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .link-display-box input { flex: 1; padding: 1rem; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; color: #fff; font-family: monospace; }
+        .btn-copy { background: linear-gradient(135deg, #32E685, #5CF0A0); color: #000; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        
+        .share-options h4 { color: #c9ceef; margin-bottom: 1rem; }
+        .share-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .share-btn { flex: 1; min-width: 150px; padding: 0.9rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; }
+        .share-btn.whatsapp { background: #25D366; color: white; }
+        .share-btn.facebook { background: #1877F2; color: white; }
+        .share-btn.twitter { background: #1DA1F2; color: white; }
+        .share-btn.email { background: rgba(30, 35, 64, 0.8); color: #c9ceef; border: 1px solid rgba(122,60,240,0.3); }
+        .share-btn:hover { transform: translateY(-2px); }
+        
+        .links-list-section { margin-top: 3rem; }
+        .section-title { color: #fff; font-size: 1.5rem; margin-bottom: 2rem; }
+        .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+        .link-card { background: rgba(30, 35, 64, 0.5); border: 1px solid rgba(122,60,240,0.2); border-radius: 16px; padding: 1.5rem; }
+        .link-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .link-card-header h3 { color: #fff; font-size: 1.1rem; }
+        .btn-delete { background: rgba(255,77,109,0.2); color: #FF4D6D; border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; }
+        .link-promo { background: rgba(25,211,218,0.1); color: #19D3DA; padding: 0.6rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .link-url { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .link-url input { flex: 1; padding: 0.7rem; background: rgba(20, 25, 44, 0.5); border: 1px solid rgba(122,60,240,0.3); border-radius: 8px; color: #fff; font-size: 0.85rem; font-family: monospace; }
+        .btn-copy-small { background: rgba(50,230,133,0.2); color: #32E685; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; min-width: 45px; }
+        .link-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .stat { text-align: center; padding: 0.8rem; background: rgba(20, 25, 44, 0.5); border-radius: 8px; }
+        .stat-value { display: block; color: #19D3DA; font-size: 1.5rem; font-weight: 700; }
+        .stat-label { display: block; color: #9aa1d2; font-size: 0.85rem; margin-top: 0.3rem; }
+        .link-footer { display: flex; justify-content: space-between; color: #9aa1d2; font-size: 0.85rem; }
+        .link-expiry.never { color: #32E685; }
+        
+        .empty-state { text-align: center; padding: 3rem; color: #9aa1d2; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+        .empty-subtitle { font-size: 0.9rem; color: #7a7f9f; margin-top: 0.5rem; }
+        .loading-spinner { text-align: center; padding: 3rem; color: #c9ceef; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(122,60,240,0.3); border-top: 4px solid #7A3CF0; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: #32E685; color: #000; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 1000; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: #FF4D6D; color: white; }
+        
+        @media (max-width: 1024px) {
+            .dashboard-layout { flex-direction: column; }
+            .dashboard-sidebar { width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            .links-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">BHARATBAZAAR</span>
+                <span class="seller-badge">Seller</span>
+            </div>
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">3</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="sellerdashboard.html" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Overview</span>
+                </a>
+                <a href="sellerproducts.html" class="menu-item">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Manage Products</span>
+                </a>
+                <a href="sellerlinks.html" class="menu-item active">
+                    <span class="menu-icon">🔗</span>
+                    <span class="menu-text">Generated Links</span>
+                </a>
+                <a href="sellerqueue.html" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Queue Monitor</span>
+                </a>
+                <a href="sellerrooms.html" class="menu-item">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Rooms Control</span>
+                </a>
+                <a href="selleranalytics.html" class="menu-item">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">Analytics</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1>Generated Product Links</h1>
+                <p class="header-subtitle">Create and share unique product links across social media</p>
+            </div>
+
+            <div class="generate-link-section">
+                <div class="form-card">
+                    <h2 class="card-title">
+                        <span class="title-icon">🔗</span>
+                        Create New Shareable Link
+                    </h2>
+                    
+                    <form id="generateLinkForm" class="link-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="selectProduct">Select Product *</label>
+                                <select id="selectProduct" required>
+                                    <option value="">Choose a product</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="linkExpiry">Link Expiry (Optional)</label>
+                                <select id="linkExpiry">
+                                    <option value="never">Never Expires</option>
+                                    <option value="7">7 Days</option>
+                                    <option value="30">30 Days</option>
+                                    <option value="90">90 Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promoText">Promotional Message (Optional)</label>
+                            <input type="text" id="promoText" placeholder="e.g., 50% off today only!" maxlength="100">
+                            <span class="char-count">0/100</span>
+                        </div>
+                        
+                        <button type="submit" class="btn-generate">
+                            <span id="generateBtnText">🔗 Generate Link</span>
+                        </button>
+                    </form>
+                    
+                    <div id="generatedLinkDisplay" class="generated-link-display" style="display: none;">
+                        <h3>Your Shareable Link:</h3>
+                        <div class="link-display-box">
+                            <input type="text" id="generatedLinkText" readonly>
+                            <button class="btn-copy" onclick="copyLink()">📋 Copy</button>
+                        </div>
+                        
+                        <div class="share-options">
+                            <h4>Share on:</h4>
+                            <div class="share-buttons">
+                                <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                                    <span>💬</span> WhatsApp
+                                </button>
+                                <button class="share-btn facebook" onclick="shareOnFacebook()">
+                                    <span>📘</span> Facebook
+                                </button>
+                                <button class="share-btn twitter" onclick="shareOnTwitter()">
+                                    <span>🐦</span> Twitter
+                                </button>
+                                <button class="share-btn email" onclick="shareViaEmail()">
+                                    <span>✉️</span> Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="links-list-section">
+                <h2 class="section-title">All Generated Links (<span id="linksCount">0</span>)</h2>
+                <div class="links-grid" id="linksGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading links...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let currentGeneratedLink = '';
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProductsDropdown();
+            loadGeneratedLinks();
+        });
+
+        function loadProductsDropdown() {
+            const products = JSON.parse(localStorage.getItem('sellerProducts')) || [];
+            const select = document.getElementById('selectProduct');
+            
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.name} - ₹${product.price.toLocaleString()}`;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('promoText').addEventListener('input', function() {
+            document.querySelector('.char-count').textContent = `${this.value.length}/100`;
+        });
+
+        document.getElementById('generateLinkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const productId = document.getElementById('selectProduct').value;
+            const promoText = document.getElementById('promoText').value;
+            const expiry = document.getElementById('linkExpiry').value;
+            
+            if (!productId) {
+                showToast('Please select a product', 'error');
+                return;
+            }
+            
+            generateLink(productId, promoText, expiry);
+        });
+
+        function generateLink(productId, promoText, expiry) {
+            const products = JSON.parse(localStorage.getItem('sellerProducts')) || [];
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) return;
+            
+            const linkId = 'LNK' + Date.now();
+            const baseUrl = window.location.origin;
+            const generatedUrl = `${baseUrl}/productdetail.html?id=${productId}&ref=${linkId}`;
+            
+            const linkData = {
+                id: linkId,
+                productId: productId,
+                productName: product.name,
+                url: generatedUrl,
+                promoText: promoText,
+                expiry: expiry,
+                clicks: 0,
+                conversions: 0,
+                createdDate: new Date().toISOString()
+            };
+            
+            let links = JSON.parse(localStorage.getItem('generatedLinks')) || [];
+            links.push(linkData);
+            localStorage.setItem('generatedLinks', JSON.stringify(links));
+            
+            currentGeneratedLink = generatedUrl;
+            document.getElementById('generatedLinkText').value = generatedUrl;
+            document.getElementById('generatedLinkDisplay').style.display = 'block';
+            document.getElementById('generatedLinkDisplay').scrollIntoView({ behavior: 'smooth' });
+            
+            loadGeneratedLinks();
+            showToast('Link generated successfully! 🔗', 'success');
+        }
+
+        function copyLink() {
+            const input = document.getElementById('generatedLinkText');
+            input.select();
+            document.execCommand('copy');
+            showToast('Link copied to clipboard! 📋', 'success');
+        }
+
+        function shareOnWhatsApp() {
+            const message = encodeURIComponent(`Check out this product: ${currentGeneratedLink}`);
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+        function shareOnFacebook() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentGeneratedLink)}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent('Check out this amazing product!');
+            window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentGeneratedLink)}&text=${text}`, '_blank');
+        }
+
+        function shareViaEmail() {
+            const subject = encodeURIComponent('Check out this product');
+            const body = encodeURIComponent(`I found this amazing product you might like: ${currentGeneratedLink}`);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function loadGeneratedLinks() {
+            const links = JSON.parse(localStorage.getItem('generatedLinks')) || [];
+            const linksGrid = document.getElementById('linksGrid');
+            linksGrid.innerHTML = '';
+            
+            document.getElementById('linksCount').textContent = links.length;
+            
+            if (links.length === 0) {
+                linksGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔗</div><p>No links generated yet</p><p class="empty-subtitle">Create your first shareable link to get started</p></div>`;
+                return;
+            }
+            
+            links.reverse().forEach(link => {
+                const linkCard = document.createElement('div');
+                linkCard.className = 'link-card';
+                linkCard.innerHTML = `
+                    <div class="link-card-header">
+                        <h3>${link.productName}</h3>
+                        <button class="btn-delete" onclick="deleteLink('${link.id}')">🗑️</button>
+                    </div>
+                    ${link.promoText ? `<div class="link-promo">💬 ${link.promoText}</div>` : ''}
+                    <div class="link-url">
+                        <input type="text" value="${link.url}" readonly>
+                        <button class="btn-copy-small" onclick="copyLinkById('${link.id}')">📋</button>
+                    </div>
+                    <div class="link-stats">
+                        <div class="stat"><span class="stat-value">${link.clicks}</span><span class="stat-label">Clicks</span></div>
+                        <div class="stat"><span class="stat-value">${link.conversions}</span><span class="stat-label">Conversions</span></div>
+                        <div class="stat"><span class="stat-value">${link.conversions > 0 ? ((link.conversions / link.clicks) * 100).toFixed(1) : 0}%</span><span class="stat-label">Rate</span></div>
+                    </div>
+                    <div class="link-footer">
+                        <span class="link-date">Created: ${new Date(link.createdDate).toLocaleDateString()}</span>
+                        <span class="link-expiry ${link.expiry === 'never' ? 'never' : ''}">${link.expiry === 'never' ? 'Never expires' : `Expires in ${link.expiry} days`}</span>
+                    </div>
+                `;
+                linksGrid.appendChild(linkCard);
+            });
+        }
+
+        function copyLinkById(linkId) {
+            const links = JSON.parse(localStorage.getItem('generatedLinks')) || [];
+            const link = links.find(l => l.id === linkId);
+            
+            if (link) {
+                navigator.clipboard.writeText(link.url);
+                showToast('Link copied! 📋', 'success');
+            }
+        }
+
+        function deleteLink(linkId) {
+            if (!confirm('Delete this link?')) return;
+            
+            let links = JSON.parse(localStorage.getItem('generatedLinks')) || [];
+            links = links.filter(l => l.id !== linkId);
+            localStorage.setItem('generatedLinks', JSON.stringify(links));
+            
+            loadGeneratedLinks();
+            showToast('Link deleted', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

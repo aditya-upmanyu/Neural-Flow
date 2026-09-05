@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BharatBuzzAI - Your Shopping Assistant | BharatBazaar</title>
+    <link rel="stylesheet" href="bharatbuzzai.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="chat-header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span>BharatBazaar</span>
+            </div>
+            <h1>🤖 BharatBuzzAI</h1>
+            <p>Your Intelligent Shopping Assistant - Local for Vocal</p>
+        </div>
+    </header>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <div class="chat-window">
+            <!-- Chat Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            🙏 Namaste! I'm BharatBuzzAI, your intelligent shopping assistant for BharatBazaar - Your Local for Vocal Marketplace! How can I help you today?
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions" id="quickActions">
+                <button class="quick-btn" data-message="Show me sarees">🥻 Sarees</button>
+                <button class="quick-btn" data-message="Show me kurtas">👔 Kurtas</button>
+                <button class="quick-btn" data-message="What are your prices?">💰 Prices</button>
+                <button class="quick-btn" data-message="Shipping details">🚚 Shipping</button>
+                <button class="quick-btn" data-message="Tell me about local products">🇮🇳 Local for Vocal</button>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="chat-input-area">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Ask me anything about BharatBazaar products..."
+                    autocomplete="off"
+                >
+                <button class="send-button" id="sendButton">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="info-sidebar">
+            <div class="info-card">
+                <h3>💡 Quick Tips</h3>
+                <ul>
+                    <li>Ask about any product category</li>
+                    <li>Get pricing information</li>
+                    <li>Learn about shipping & returns</li>
+                    <li>Discover local artisans</li>
+                    <li>Check payment options</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>🛍️ Popular Categories</h3>
+                <ul>
+                    <li>Sarees & Silk</li>
+                    <li>Kurta Pajamas</li>
+                    <li>Lehengas & Bridal</li>
+                    <li>Traditional Jewelry</li>
+                    <li>Ethnic Accessories</li>
+                </ul>
+            </div>
+
+            <div class="info-card contact-card">
+                <h3>📞 Need Human Help?</h3>
+                <p>Email: support@bharatbazaar.com</p>
+                <p>Phone: +91-9876543210</p>
+                <p>WhatsApp: +91-9876543210</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="bharatbuzzai.js"></script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

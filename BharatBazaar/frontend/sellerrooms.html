@@ -1,0 +1,509 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms Control - Seller Dashboard</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/seller-dashboard.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-dot"></div>
+                <span class="brand-text">LIVE SHOP</span>
+                <span class="seller-badge">Seller</span>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">3</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar Menu -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="seller-dashboard.html" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Overview</span>
+                </a>
+                <a href="seller-products.html" class="menu-item">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Manage Products</span>
+                </a>
+                <a href="seller-links.html" class="menu-item">
+                    <span class="menu-icon">🔗</span>
+                    <span class="menu-text">Generated Links</span>
+                </a>
+                <a href="seller-queue.html" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Queue Monitor</span>
+                </a>
+                <a href="seller-rooms.html" class="menu-item active">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Rooms Control</span>
+                </a>
+                <a href="seller-analytics.html" class="menu-item">
+                    <span class="menu-icon">💰</span>
+                    <span class="menu-text">Analytics</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <h1>Live Rooms Control</h1>
+                    <p class="header-subtitle">Manage live shopping rooms and assign salespeople</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="openCreateRoomModal()">
+                        + Create New Room
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rooms Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #32E685, #5CF0A0);">
+                        🔴
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="activeRooms">0</div>
+                        <div class="stat-label">Active Rooms</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #19D3DA, #4DE3EA);">
+                        🟢
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="availableRooms">0</div>
+                        <div class="stat-label">Available Rooms</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FF66C4, #FF99D9);">
+                        👥
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalSessions">0</div>
+                        <div class="stat-label">Sessions Today</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #7A3CF0, #A35AF7);">
+                        ⏱️
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="avgDuration">0:00</div>
+                        <div class="stat-label">Avg. Duration</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rooms Grid -->
+            <div class="rooms-section">
+                <h2 class="section-title">All Rooms</h2>
+                <div class="rooms-grid" id="roomsGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading rooms...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="sessions-section">
+                <h2 class="section-title">Active Sessions</h2>
+                <div class="sessions-list" id="sessionsList">
+                    <!-- Active sessions will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div id="createRoomModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Room</h2>
+                <button class="btn-close" onclick="closeCreateRoomModal()">✕</button>
+            </div>
+            
+            <form id="createRoomForm">
+                <div class="form-group">
+                    <label for="roomName">Room Name *</label>
+                    <input type="text" id="roomName" placeholder="e.g., Room 1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="assignSalesperson">Assign Salesperson *</label>
+                    <select id="assignSalesperson" required>
+                        <option value="">Select Salesperson</option>
+                        <option value="salesperson1">Amit Singh</option>
+                        <option value="salesperson2">Sneha Patel</option>
+                        <option value="salesperson3">Vikram Roy</option>
+                        <option value="salesperson4">Priya Sharma</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="roomDescription">Description (Optional)</label>
+                    <textarea id="roomDescription" rows="3" placeholder="Room purpose or specialty..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeCreateRoomModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Load rooms on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRooms();
+            loadActiveSessions();
+            updateRoomStats();
+            
+            // Real-time updates
+            setInterval(() => {
+                loadRooms();
+                loadActiveSessions();
+                updateRoomStats();
+            }, 5000);
+        });
+
+        // Load all rooms
+        function loadRooms() {
+            // In production, fetch from API
+            let rooms = JSON.parse(localStorage.getItem('liveRooms')) || [
+                {
+                    id: 'room1',
+                    name: 'Room 1',
+                    salesperson: 'Amit Singh',
+                    salespersonId: 'salesperson1',
+                    status: 'active',
+                    customer: 'Rahul Kumar',
+                    customerId: 'cust001',
+                    startTime: new Date(Date.now() - 15 * 60000).toISOString(),
+                    productDiscussed: 'iPhone 15 Pro'
+                },
+                {
+                    id: 'room2',
+                    name: 'Room 2',
+                    salesperson: 'Sneha Patel',
+                    salespersonId: 'salesperson2',
+                    status: 'available',
+                    customer: null,
+                    customerId: null,
+                    startTime: null,
+                    productDiscussed: null
+                },
+                {
+                    id: 'room3',
+                    name: 'Room 3',
+                    salesperson: 'Vikram Roy',
+                    salespersonId: 'salesperson3',
+                    status: 'active',
+                    customer: 'Priya Sharma',
+                    customerId: 'cust002',
+                    startTime: new Date(Date.now() - 8 * 60000).toISOString(),
+                    productDiscussed: 'MacBook Pro'
+                },
+                {
+                    id: 'room4',
+                    name: 'Room 4',
+                    salesperson: 'None',
+                    salespersonId: null,
+                    status: 'offline',
+                    customer: null,
+                    customerId: null,
+                    startTime: null,
+                    productDiscussed: null
+                }
+            ];
+            
+            localStorage.setItem('liveRooms', JSON.stringify(rooms));
+            
+            const roomsGrid = document.getElementById('roomsGrid');
+            roomsGrid.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const roomCard = document.createElement('div');
+                roomCard.className = `room-card ${room.status}`;
+                
+                let statusBadge = '';
+                let statusIcon = '';
+                if (room.status === 'active') {
+                    statusBadge = '<span class="status-badge live">🔴 Live</span>';
+                    statusIcon = '🔴';
+                } else if (room.status === 'available') {
+                    statusBadge = '<span class="status-badge available">🟢 Available</span>';
+                    statusIcon = '🟢';
+                } else {
+                    statusBadge = '<span class="status-badge offline">⚫ Offline</span>';
+                    statusIcon = '⚫';
+                }
+                
+                let duration = '';
+                if (room.startTime) {
+                    const minutes = Math.floor((Date.now() - new Date(room.startTime)) / 60000);
+                    duration = `<div class="session-duration">⏱️ ${minutes} min</div>`;
+                }
+                
+                roomCard.innerHTML = `
+                    <div class="room-header">
+                        <div class="room-title">
+                            <span class="room-icon">${statusIcon}</span>
+                            <h3>${room.name}</h3>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    
+                    <div class="room-details">
+                        <div class="detail-row">
+                            <span class="detail-label">👨‍💼 Salesperson:</span>
+                            <span class="detail-value">${room.salesperson}</span>
+                        </div>
+                        
+                        ${room.customer ? `
+                            <div class="detail-row">
+                                <span class="detail-label">👤 Customer:</span>
+                                <span class="detail-value">${room.customer}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">📦 Product:</span>
+                                <span class="detail-value">${room.productDiscussed}</span>
+                            </div>
+                            ${duration}
+                        ` : '<div class="empty-room">Waiting for customer assignment</div>'}
+                    </div>
+                    
+                    <div class="room-actions">
+                        ${room.status === 'active' ? `
+                            <button class="btn-action view" onclick="viewRoom('${room.id}')">
+                                👁️ View
+                            </button>
+                            <button class="btn-action end" onclick="endSession('${room.id}')">
+                                ⏹️ End Session
+                            </button>
+                        ` : room.status === 'available' ? `
+                            <button class="btn-action assign" onclick="assignToRoom('${room.id}')">
+                                ➕ Assign Customer
+                            </button>
+                        ` : `
+                            <button class="btn-action activate" onclick="activateRoom('${room.id}')">
+                                ▶️ Activate
+                            </button>
+                        `}
+                        <button class="btn-action delete" onclick="deleteRoom('${room.id}')">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                
+                roomsGrid.appendChild(roomCard);
+            });
+        }
+
+        // Load active sessions
+        function loadActiveSessions() {
+            const rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            const activeSessions = rooms.filter(r => r.status === 'active');
+            const sessionsList = document.getElementById('sessionsList');
+            
+            if (activeSessions.length === 0) {
+                sessionsList.innerHTML = '<p class="empty-text">No active sessions at the moment</p>';
+                return;
+            }
+            
+            sessionsList.innerHTML = '';
+            activeSessions.forEach(session => {
+                const minutes = Math.floor((Date.now() - new Date(session.startTime)) / 60000);
+                
+                const sessionCard = document.createElement('div');
+                sessionCard.className = 'session-card';
+                sessionCard.innerHTML = `
+                    <div class="session-info">
+                        <div class="session-room">${session.name}</div>
+                        <div class="session-participants">
+                            <span>👨‍💼 ${session.salesperson}</span>
+                            <span>↔️</span>
+                            <span>👤 ${session.customer}</span>
+                        </div>
+                        <div class="session-product">📦 ${session.productDiscussed}</div>
+                    </div>
+                    <div class="session-meta">
+                        <div class="session-time">⏱️ ${minutes} min</div>
+                        <button class="btn-icon" onclick="viewRoom('${session.id}')" title="View Session">
+                            👁️
+                        </button>
+                    </div>
+                `;
+                sessionsList.appendChild(sessionCard);
+            });
+        }
+
+        // Update room stats
+        function updateRoomStats() {
+            const rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            const activeCount = rooms.filter(r => r.status === 'active').length;
+            const availableCount = rooms.filter(r => r.status === 'available').length;
+            
+            document.getElementById('activeRooms').textContent = activeCount;
+            document.getElementById('availableRooms').textContent = availableCount;
+            document.getElementById('totalSessions').textContent = '12'; // Mock data
+            document.getElementById('avgDuration').textContent = '15:30'; // Mock data
+        }
+
+        // Create room modal
+        function openCreateRoomModal() {
+            document.getElementById('createRoomModal').style.display = 'flex';
+        }
+
+        function closeCreateRoomModal() {
+            document.getElementById('createRoomModal').style.display = 'none';
+            document.getElementById('createRoomForm').reset();
+        }
+
+        // Handle create room form
+        document.getElementById('createRoomForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const roomName = document.getElementById('roomName').value;
+            const salespersonId = document.getElementById('assignSalesperson').value;
+            const salespersonName = document.getElementById('assignSalesperson').selectedOptions[0].text;
+            
+            const newRoom = {
+                id: 'room' + Date.now(),
+                name: roomName,
+                salesperson: salespersonName,
+                salespersonId: salespersonId,
+                status: 'available',
+                customer: null,
+                customerId: null,
+                startTime: null,
+                productDiscussed: null
+            };
+            
+            let rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            rooms.push(newRoom);
+            localStorage.setItem('liveRooms', JSON.stringify(rooms));
+            
+            closeCreateRoomModal();
+            loadRooms();
+            updateRoomStats();
+            showToast('Room created successfully! 🏠', 'success');
+        });
+
+        // View room
+        function viewRoom(roomId) {
+            showToast('Opening room monitor...', 'info');
+            // In production, open live room monitoring page
+            window.open(`live-room.html?roomId=${roomId}`, '_blank');
+        }
+
+        // End session
+        function endSession(roomId) {
+            if (!confirm('End this live session?')) return;
+            
+            let rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            const roomIndex = rooms.findIndex(r => r.id === roomId);
+            
+            if (roomIndex !== -1) {
+                rooms[roomIndex].status = 'available';
+                rooms[roomIndex].customer = null;
+                rooms[roomIndex].customerId = null;
+                rooms[roomIndex].startTime = null;
+                rooms[roomIndex].productDiscussed = null;
+                
+                localStorage.setItem('liveRooms', JSON.stringify(rooms));
+                loadRooms();
+                loadActiveSessions();
+                updateRoomStats();
+                showToast('Session ended', 'success');
+            }
+        }
+
+        // Assign to room
+        function assignToRoom(roomId) {
+            window.location.href = `seller-queue.html?assignTo=${roomId}`;
+        }
+
+        // Activate room
+        function activateRoom(roomId) {
+            let rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            const roomIndex = rooms.findIndex(r => r.id === roomId);
+            
+            if (roomIndex !== -1) {
+                if (!rooms[roomIndex].salespersonId) {
+                    showToast('Please assign a salesperson first', 'error');
+                    return;
+                }
+                
+                rooms[roomIndex].status = 'available';
+                localStorage.setItem('liveRooms', JSON.stringify(rooms));
+                loadRooms();
+                updateRoomStats();
+                showToast('Room activated! 🟢', 'success');
+            }
+        }
+
+        // Delete room
+        function deleteRoom(roomId) {
+            if (!confirm('Delete this room? This action cannot be undone.')) return;
+            
+            let rooms = JSON.parse(localStorage.getItem('liveRooms')) || [];
+            rooms = rooms.filter(r => r.id !== roomId);
+            localStorage.setItem('liveRooms', JSON.stringify(rooms));
+            
+            loadRooms();
+            updateRoomStats();
+            showToast('Room deleted', 'success');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

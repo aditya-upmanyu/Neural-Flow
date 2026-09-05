@@ -1,0 +1,334 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products — BharatBazaar</title>
+    <link rel="stylesheet" href="chatbot.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9f9fc; color: #1a1a2e; min-height: 100vh; }
+
+        /* NAVBAR */
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); padding: 1rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid #ededf5; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: #1a1a2e; text-decoration: none; flex-shrink: 0; }
+        .brand-dot { width: 11px; height: 11px; background: linear-gradient(135deg,#ff6b35,#f7931e); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+        .nav-links { display: flex; gap: 0.2rem; list-style: none; margin-left: auto; }
+        .nav-links a { color: #4a4a6a; text-decoration: none; padding: 0.45rem 0.9rem; border-radius: 7px; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,107,53,.1); color: #ff6b35; }
+        .nav-actions { display: flex; gap: 0.75rem; flex-shrink: 0; }
+        .btn-cart-nav { position: relative; background: #fff8f5; border: 1.5px solid #ff6b35; color: #ff6b35; padding: 0.5rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cart-nav:hover { background: #ff6b35; color: #fff; }
+        .cart-badge { position: absolute; top: -7px; right: -7px; background: #ff6b35; color: #fff; font-size: 0.68rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+        .btn-login-nav { background: linear-gradient(135deg,#ff6b35,#f7931e); color: #fff; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .btn-login-nav:hover { box-shadow: 0 4px 14px rgba(255,107,53,.3); }
+
+        /* LAYOUT */
+        .page-wrap { max-width: 1380px; margin: 0 auto; padding: 2.5rem 2rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #1a1a2e; }
+        .page-header p { color: #7a7a9a; margin-top: 0.3rem; font-size: 0.95rem; }
+
+        /* SEARCH BAR */
+        .search-bar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .search-input-wrap { flex: 1; min-width: 240px; display: flex; background: #fff; border: 1.5px solid #e0e0ee; border-radius: 10px; overflow: hidden; transition: border-color 0.2s; }
+        .search-input-wrap:focus-within { border-color: #ff6b35; }
+        .search-input-wrap input { flex: 1; padding: 0.8rem 1rem; border: none; outline: none; font-size: 0.95rem; color: #1a1a2e; background: transparent; }
+        .search-input-wrap button { background: linear-gradient(135deg,#ff6b35,#f7931e); border: none; color: #fff; padding: 0 1.2rem; font-size: 1.1rem; cursor: pointer; transition: opacity 0.2s; }
+        .search-input-wrap button:hover { opacity: 0.9; }
+        .filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .filters select { padding: 0.75rem 1rem; background: #fff; border: 1.5px solid #e0e0ee; border-radius: 9px; color: #1a1a2e; font-size: 0.9rem; cursor: pointer; outline: none; transition: border-color 0.2s; }
+        .filters select:focus { border-color: #ff6b35; }
+
+        /* CATEGORY PILLS */
+        .cat-pills { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .cat-pill { background: #fff; border: 1.5px solid #e0e0ee; color: #4a4a6a; padding: 0.45rem 1.1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .cat-pill:hover { border-color: #ff6b35; color: #ff6b35; }
+        .cat-pill.active { background: linear-gradient(135deg,#ff6b35,#f7931e); border-color: transparent; color: #fff; }
+
+        /* RESULTS BAR */
+        .results-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .results-count { font-size: 0.9rem; color: #7a7a9a; }
+        .results-count strong { color: #1a1a2e; }
+
+        /* PRODUCT GRID */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 1.5rem; min-height: 300px; }
+        .product-card { background: #fff; border: 1px solid #ededf5; border-radius: 16px; overflow: hidden; transition: all 0.2s; position: relative; }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(255,107,53,.18); border-color: #ff6b35; }
+        .disc-badge { position: absolute; top: 10px; left: 10px; background: #ff6b35; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; z-index: 1; }
+        .out-badge { position: absolute; top: 10px; right: 10px; background: #e8304a; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; z-index: 1; }
+        .p-img-wrap { overflow: hidden; height: 200px; background: #f5f5fb; }
+        .p-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; cursor: pointer; }
+        .product-card:hover .p-img { transform: scale(1.05); }
+        .p-body { padding: 1.1rem 1.2rem 1.2rem; }
+        .p-cat { font-size: 0.7rem; font-weight: 700; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.35rem; }
+        .p-name { font-size: 0.98rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.3rem; line-height: 1.35; cursor: pointer; }
+        .p-name:hover { color: #ff6b35; }
+        .p-desc { color: #8888aa; font-size: 0.82rem; margin-bottom: 0.8rem; line-height: 1.4; }
+        .p-pricing { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .p-price { font-size: 1.2rem; font-weight: 800; color: #ff6b35; }
+        .p-orig { font-size: 0.82rem; color: #bbb; text-decoration: line-through; }
+        .p-rating { font-size: 0.78rem; color: #888aaa; margin-bottom: 0.9rem; }
+        .p-actions { display: flex; gap: 0.55rem; }
+        .btn-detail { flex: 1; background: #fff8f5; border: 1.5px solid #ff6b35; color: #ff6b35; padding: 0.58rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .btn-detail:hover { background: #ff6b35; color: #fff; }
+        .btn-cart { flex: 1.2; background: linear-gradient(135deg,#ff6b35,#f7931e); border: none; color: #fff; padding: 0.58rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .btn-cart:hover { box-shadow: 0 4px 12px rgba(255,107,53,.4); }
+        .btn-cart:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* EMPTY / LOADING */
+        .state-msg { grid-column: 1/-1; text-align: center; padding: 4rem 0; color: #9999bb; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #f0e8ff; border-top-color: #ff6b35; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.4; }
+
+        /* PAGINATION */
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
+        .pg-btn { padding: 0.55rem 0.9rem; background: #fff; border: 1.5px solid #e0e0ee; border-radius: 8px; color: #4a4a6a; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+        .pg-btn:hover { border-color: #ff6b35; color: #ff6b35; }
+        .pg-btn.active { background: linear-gradient(135deg,#ff6b35,#f7931e); border-color: transparent; color: #fff; }
+        .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.9rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; color: #fff; background: #1a1a2e; max-width: 300px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #18a349; }
+        .toast.error { background: #e8304a; }
+
+        @media (max-width: 900px) { .nav-links { display: none; } }
+        @media (max-width: 640px) { .navbar { padding: 0.85rem 1.25rem; } .page-wrap { padding: 1.5rem 1rem; } .search-bar { flex-direction: column; } .filters { flex-direction: column; } .filters select { width: 100%; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="brand"><div class="brand-dot"></div>BharatBazaar</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="customerhome.html" class="active">Products</a></li>
+    </ul>
+    <div class="nav-actions">
+        <button class="btn-cart-nav" onclick="window.location.href='cart.html'">
+            🛒 Cart<span class="cart-badge" id="navCartBadge"></span>
+        </button>
+        <button class="btn-login-nav" onclick="window.location.href='login.html'">Login</button>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <h1>All Products</h1>
+        <p>Browse, search and filter from our entire catalogue — no login required</p>
+    </div>
+
+    <div class="search-bar">
+        <div class="search-input-wrap">
+            <input type="text" id="searchInput" placeholder="Search products, brands, categories…" onkeydown="if(event.key==='Enter'){currentPage=1;loadProducts();}">
+            <button onclick="currentPage=1;loadProducts()">🔍</button>
+        </div>
+        <div class="filters">
+            <select id="sortFilter" onchange="currentPage=1;loadProducts()">
+                <option value="newest">Newest First</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="rating">Best Rated</option>
+                <option value="name">Name A–Z</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="cat-pills" id="catPills">
+        <div class="cat-pill active" data-cat="all" onclick="selectCat('all')">All</div>
+        <div class="cat-pill" data-cat="electronics" onclick="selectCat('electronics')">📱 Electronics</div>
+        <div class="cat-pill" data-cat="fashion" onclick="selectCat('fashion')">👗 Fashion</div>
+        <div class="cat-pill" data-cat="home" onclick="selectCat('home')">🏠 Home & Kitchen</div>
+        <div class="cat-pill" data-cat="accessories" onclick="selectCat('accessories')">⌚ Accessories</div>
+        <div class="cat-pill" data-cat="sports" onclick="selectCat('sports')">🏋️ Sports</div>
+        <div class="cat-pill" data-cat="books" onclick="selectCat('books')">📚 Books</div>
+        <div class="cat-pill" data-cat="toys" onclick="selectCat('toys')">🧸 Toys</div>
+    </div>
+
+    <div class="results-bar">
+        <span class="results-count" id="resultsCount">Loading…</span>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+        <div class="state-msg"><div class="spinner"></div><p>Loading products…</p></div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="chatbot.js"></script>
+<script>
+let currentPage = 1;
+let currentCat = 'all';
+const PER_PAGE = 12;
+
+// ── Guest session ─────────────────────────────────────────────────────────────
+function getGuestId() {
+    let id = localStorage.getItem('guestSessionId');
+    if (!id) { id = 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2,9); localStorage.setItem('guestSessionId', id); }
+    return id;
+}
+function apiHeaders(json = true) {
+    const token = localStorage.getItem('authToken');
+    const h = {};
+    if (json) h['Content-Type'] = 'application/json';
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    else h['X-Guest-Session'] = getGuestId();
+    return h;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Category pill ─────────────────────────────────────────────────────────────
+function selectCat(cat) {
+    currentCat = cat; currentPage = 1;
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+    loadProducts();
+}
+
+// ── Cart badge ────────────────────────────────────────────────────────────────
+async function refreshCartBadge() {
+    try {
+        const res = await fetch('/api/cart', { headers: apiHeaders(false) });
+        if (!res.ok) return;
+        const d = await res.json();
+        const n = (d.cart?.items || []).reduce((s, i) => s + i.quantity, 0);
+        const badge = document.getElementById('navCartBadge');
+        if (n > 0) { badge.textContent = n > 9 ? '9+' : n; badge.style.display = 'flex'; }
+        else { badge.style.display = 'none'; }
+    } catch (_) {}
+}
+
+// ── Load products ─────────────────────────────────────────────────────────────
+async function loadProducts() {
+    const grid = document.getElementById('productsGrid');
+    const pag  = document.getElementById('pagination');
+    const rc   = document.getElementById('resultsCount');
+    grid.innerHTML = '<div class="state-msg"><div class="spinner"></div><p>Loading…</p></div>';
+    pag.innerHTML = ''; rc.textContent = 'Loading…';
+
+    const search = document.getElementById('searchInput').value.trim();
+    const sortBy = document.getElementById('sortFilter').value;
+    const params = new URLSearchParams({ page: currentPage, limit: PER_PAGE, sortBy });
+    if (search) params.append('search', search);
+    if (currentCat !== 'all') params.append('category', currentCat);
+
+    try {
+        const res = await fetch('/api/products?' + params);
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+
+        const products = d.products || [];
+        const total = d.pagination?.total || 0;
+        const pages = d.pagination?.pages || 1;
+
+        rc.innerHTML = `Showing <strong>${products.length}</strong> of <strong>${total}</strong> products`;
+
+        if (products.length === 0) {
+            grid.innerHTML = '<div class="state-msg"><div class="empty-icon">🔍</div><p>No products match your search.</p></div>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        products.forEach(p => grid.appendChild(buildCard(p)));
+        renderPagination(pages);
+    } catch (err) {
+        grid.innerHTML = `<div class="state-msg" style="color:#e8304a">⚠️ ${err.message}</div>`;
+        rc.textContent = '';
+    }
+}
+
+// ── Build product card ────────────────────────────────────────────────────────
+function buildCard(p) {
+    const img = (p.images && p.images[0]) || 'https://placehold.co/400x260?text=No+Image';
+    const price = p.price || 0;
+    const disc = p.discount || 0;
+    const orig = p.originalPrice;
+    const rating = p.rating?.average || 0;
+    const rCount = p.rating?.count || 0;
+    const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+    const outOfStock = p.stock === 0;
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+        ${disc > 0 ? `<div class="disc-badge">${disc}% OFF</div>` : ''}
+        ${outOfStock ? '<div class="out-badge">Out of Stock</div>' : ''}
+        <div class="p-img-wrap">
+            <img src="${img}" alt="${p.name}" class="p-img" loading="lazy"
+                 onclick="window.location.href='productdetail.html?id=${p._id}'"
+                 onerror="this.src='https://placehold.co/400x260?text=No+Image'">
+        </div>
+        <div class="p-body">
+            <div class="p-cat">${p.category}</div>
+            <div class="p-name" onclick="window.location.href='productdetail.html?id=${p._id}'">${p.name}</div>
+            <div class="p-desc">${(p.description||'').slice(0,70)}…</div>
+            <div class="p-pricing">
+                <span class="p-price">₹${price.toLocaleString('en-IN')}</span>
+                ${orig && orig > price ? `<span class="p-orig">₹${orig.toLocaleString('en-IN')}</span>` : ''}
+            </div>
+            <div class="p-rating"><span style="color:#f7931e">${stars}</span> ${rating.toFixed(1)} (${rCount.toLocaleString()})</div>
+            <div class="p-actions">
+                <button class="btn-detail" onclick="window.location.href='productdetail.html?id=${p._id}'">View</button>
+                <button class="btn-cart" id="add-${p._id}" ${outOfStock ? 'disabled' : ''}
+                    onclick="addToCart('${p._id}', this)">
+                    ${outOfStock ? 'Out of Stock' : '🛒 Add to Cart'}
+                </button>
+            </div>
+        </div>`;
+    return card;
+}
+
+// ── Add to cart ───────────────────────────────────────────────────────────────
+async function addToCart(productId, btn) {
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Adding…';
+    try {
+        const res = await fetch('/api/cart/add', {
+            method: 'POST', headers: apiHeaders(),
+            body: JSON.stringify({ productId, quantity: 1 })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Failed');
+        showToast('Added to cart! 🛒', 'success');
+        refreshCartBadge();
+        btn.textContent = '✓ Added';
+        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+    } catch (err) {
+        showToast(err.message, 'error');
+        btn.textContent = orig; btn.disabled = false;
+    }
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+function renderPagination(pages) {
+    const pag = document.getElementById('pagination');
+    if (pages <= 1) return;
+    let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
+    for (let i = 1; i <= pages; i++) {
+        if (i === 1 || i === pages || (i >= currentPage-1 && i <= currentPage+1)) {
+            html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+        } else if (i === currentPage-2 || i === currentPage+2) {
+            html += `<button class="pg-btn" disabled>…</button>`;
+        }
+    }
+    html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>Next →</button>`;
+    pag.innerHTML = html;
+}
+function goPage(p) { currentPage = p; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+window.addEventListener('DOMContentLoaded', () => { loadProducts(); refreshCartBadge(); });
+</script>
+<script src="/js/bb-status.js" defer></script>
+</body>
+</html>

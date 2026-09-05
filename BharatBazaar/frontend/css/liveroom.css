@@ -1,0 +1,434 @@
+/* ===================================
+   LIVE ROOM VIDEO INTERFACE
+   =================================== */
+
+.live-room-container {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Live Room Header */
+.live-room-header {
+    background: rgba(14, 18, 32, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--stroke);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.room-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.live-indicator {
+    background: var(--error-red);
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: pulse 2s infinite;
+}
+
+.room-title {
+    color: var(--text-high);
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.room-timer {
+    color: var(--text-medium);
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    font-size: 1.125rem;
+}
+
+/* Main Content Layout */
+.live-room-main {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    height: calc(100vh - 80px);
+}
+
+/* Video Section */
+.video-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.video-container {
+    position: relative;
+    background: var(--bg-elevated);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Seller Video (Large) */
+.seller-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #000000;
+}
+
+/* Customer Video (Picture-in-Picture) */
+.customer-video {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 240px;
+    height: 180px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--accent-violet);
+    box-shadow: var(--shadow-lg);
+    object-fit: cover;
+    background: #000000;
+}
+
+/* Video Controls */
+.video-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--spacing-sm);
+    background: rgba(14, 18, 32, 0.85);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--stroke);
+}
+
+.btn-control {
+    padding: 12px 20px;
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    background: rgba(30, 35, 64, 0.6);
+    color: var(--text-high);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.95rem;
+}
+
+.btn-control:hover {
+    background: rgba(122, 60, 240, 0.2);
+    border-color: var(--accent-violet);
+    transform: translateY(-2px);
+}
+
+.btn-control.accept {
+    background: linear-gradient(135deg, var(--success-green), #5CF0A0);
+    color: #000000;
+    border: none;
+}
+
+.btn-control.accept:hover {
+    filter: brightness(1.1);
+}
+
+.btn-control.end {
+    background: linear-gradient(135deg, var(--error-red), #FF7B95);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-control.end:hover {
+    filter: brightness(1.1);
+}
+
+.btn-control:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Status Indicator */
+.status-indicator {
+    padding: 12px 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: 600;
+}
+
+.status-indicator.connected {
+    border-color: var(--success-green);
+    color: var(--success-green);
+    background: rgba(50, 230, 133, 0.1);
+}
+
+.status-indicator.disconnected {
+    border-color: var(--error-red);
+    color: var(--error-red);
+    background: rgba(255, 77, 109, 0.1);
+}
+
+.status-indicator.waiting {
+    border-color: var(--warning-orange);
+    color: var(--warning-orange);
+    background: rgba(255, 138, 32, 0.1);
+}
+
+.status-indicator.live {
+    border-color: var(--accent-violet);
+    color: var(--accent-violet);
+    background: rgba(122, 60, 240, 0.1);
+}
+
+/* Sidebar Section */
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Products Panel */
+.products-panel,
+.chat-panel {
+    background: var(--bg-elevated);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.products-panel {
+    height: 40%;
+}
+
+.chat-panel {
+    flex: 1;
+}
+
+.panel-title {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--stroke);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-high);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: rgba(30, 35, 64, 0.5);
+}
+
+/* Products List in Live Room */
+.products-list-live {
+    padding: var(--spacing-sm);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.product-item-live {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: rgba(30, 35, 64, 0.3);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.product-item-live:hover {
+    background: rgba(30, 35, 64, 0.5);
+    border-color: var(--accent-violet);
+}
+
+.product-item-live img {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+}
+
+.product-info-live {
+    flex: 1;
+}
+
+.product-name-live {
+    color: var(--text-high);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.product-price-live {
+    color: var(--success-green);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.btn-show-product {
+    background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-show-product:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(122, 60, 240, 0.4);
+}
+
+/* Chat Messages */
+.chat-messages {
+    flex: 1;
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.chat-message {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.chat-message.sent {
+    background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.received {
+    background: rgba(30, 35, 64, 0.5);
+    color: var(--text-high);
+    border: 1px solid var(--stroke);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message.system {
+    background: rgba(25, 211, 218, 0.1);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(25, 211, 218, 0.3);
+    align-self: center;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Chat Input */
+.chat-input-container {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--stroke);
+    display: flex;
+    gap: var(--spacing-sm);
+    background: rgba(30, 35, 64, 0.3);
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-sm);
+    color: var(--text-high);
+    font-size: 0.95rem;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+}
+
+.btn-send {
+    background: linear-gradient(135deg, var(--accent-cyan), #4DE3EA);
+    color: #000000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-send:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(25, 211, 218, 0.4);
+}
+
+/* Responsive Live Room */
+@media (max-width: 1024px) {
+    .live-room-main {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .video-section {
+        height: 60vh;
+    }
+    
+    .customer-video {
+        width: 160px;
+        height: 120px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .video-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .products-panel {
+        height: 250px;
+    }
+    
+    .chat-panel {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .live-room-header {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        text-align: center;
+    }
+    
+    .btn-control {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .customer-video {
+        width: 120px;
+        height: 90px;
+    }
+}
