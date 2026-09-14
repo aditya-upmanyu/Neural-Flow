@@ -8,6 +8,16 @@ The project combines **predictive machine learning, deterministic safety control
 
 ---
 
+## 🏆 Built For
+
+### Agentic AI Hackathon — Tech Zephyr 4.0
+
+**Indian Institute of Technology Bhubaneswar**
+
+NFV5 is submitted as an entry to the **Agentic AI Hackathon** where it demonstrates true agentic AI behavior through multi-step decision-making, autonomous execution, and adaptive recovery. The system doesn't just observe infrastructure — it acts, evaluates outcomes, adapts strategies when needed, and maintains safety-first autonomous control throughout the entire recovery lifecycle.
+
+---
+
 ## 🌐 System Overview
 
 Modern monitoring systems are primarily designed to **observe infrastructure and alert human operators**.
@@ -868,21 +878,16 @@ This demonstrates the difference between **simple monitoring** and **autonomous 
 
 ---
 
-# 🏆 Built For
+# 🏆 Agentic AI at Its Core
 
-## Razorpay AI Buildathon 2026
+NFV5 exemplifies true agentic AI behavior:
 
-**Track:** Open Track — Build what you believe should exist.
+- **Autonomous Execution**: The system independently observes, decides, and acts without human intervention at each step
+- **Adaptive Decision-Making**: When initial strategies fail, the agent evaluates alternatives and replans autonomously
+- **Tool Interaction**: NFV5 interacts with infrastructure components to execute recovery actions and gather verification data
+- **Outcome Evaluation**: Before declaring success, the agent verifies results through independent checks
 
-NFV5 demonstrates an approach to autonomous infrastructure resilience combining:
-
-* 🔮 Predictive ML
-* 🤖 Controlled autonomous decisions
-* 🛡️ Deterministic safety guardrails
-* 🔄 Adaptive recovery
-* ✅ Independent verification
-* 📜 Audit-ready decision receipts
-* 🌐 Real-world multi-node application demonstration
+Rather than just generating recommendations, NFV5 **pursues its goal of maintaining infrastructure health through continuous autonomous action, evaluation, and adaptation** — embodying the core principles of agentic AI.
 
 ---
 
@@ -1076,7 +1081,7 @@ For questions, suggestions, collaboration, or technical discussions, use GitHub 
 
 **Predict. Decide. Safely Act. Verify. Replan.**
 
-Built for **Razorpay AI Buildathon 2026 — Open Track**
+Built for **Agentic AI Hackathon — Tech Zephyr 4.0 | IIT Bhubaneswar**
 
 ⭐ **Star the repository if you find the project interesting!**
 
