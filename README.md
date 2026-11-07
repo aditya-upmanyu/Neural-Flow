@@ -4,7 +4,7 @@
 
 NFV5 is an AI-powered infrastructure resilience platform designed to detect abnormal infrastructure behavior, predict potential SLA breaches, make controlled recovery decisions, autonomously reroute traffic, verify whether recovery actually succeeded, and adapt when the first recovery strategy is unsuccessful.
 
-The project combines **predictive machine learning, deterministic safety controls, autonomous decision-making, independent verification, adaptive recovery, and immutable audit receipts** into a controlled infrastructure recovery loop.
+The project combines **predictive machine learning, deterministic safety controls, autonomous decision-making, independent verification, adaptive recovery, and immutable audit receipts** into a controlled infrastructure recovery loop!
 
 ---
 
